@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TextInput, Pressable, View } from 'react-native';
 import RadioButtonGroup, { RadioButtonItem } from 'expo-radio-button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ModalPlanilla = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -9,6 +10,23 @@ const ModalPlanilla = () => {
   const [edad, setEdad] = useState("");
   const [telefono, setTelefono] = useState("");
   const [labor, setLabor] = useState("");
+
+  const storeHomeItem = async () => {
+    try {
+      const aux = await AsyncStorage.getItem('homeItem')
+      if(aux != null){
+        const jsonValue = JSON.stringify({nombre, rut, edad, telefono, labor})
+        let aux2 = aux + jsonValue
+        console.log(aux)
+        console.log(aux2)
+        await AsyncStorage.setItem("homeItem", aux2)
+      }else{
+        return null
+      }
+    } catch (e) {
+      Alert.alert("Hubo un error en guardar su data, por favor, vuelva a completar el formulario")
+    }
+  }
 
   return (
     <View style={styles.centeredView}>
@@ -23,11 +41,11 @@ const ModalPlanilla = () => {
             <Text style={styles.modalTitle}>Ingrese nombre</Text>
             <TextInput style={styles.textInput} placeHolder= "Ingrese nombre" value={nombre} onChangeText={setNombre} />
             <Text style={styles.modalTitle}>Ingrese rut</Text>
-            <TextInput style={styles.textInput} placeHolder= "Ingrese rut" value={rut} onChangeText={setRut} />
+            <TextInput style={styles.textInput} placeHolder= "Ingrese rut" keyboardType="numeric" value={rut} onChangeText={setRut} />
             <Text style={styles.modalTitle}>Ingrese edad</Text>
-            <TextInput style={styles.textInput} placeHolder= "Ingrese edad" value={edad} onChangeText={setEdad} />
+            <TextInput style={styles.textInput} placeHolder= "Ingrese edad" keyboardType="numeric" value={edad} onChangeText={setEdad} />
             <Text style={styles.modalTitle}>Ingrese telefono</Text>
-            <TextInput style={styles.textInput} placeHolder= "Ingrese telefono" value={telefono} onChangeText={setTelefono} />
+            <TextInput style={styles.textInput} placeHolder= "Ingrese telefono" keyboardType="numeric" value={telefono} onChangeText={setTelefono} />
             <Text style={styles.modalTitle}>Seleccione su ocupación</Text>
             <RadioButtonGroup containerStyle={{ marginBottom: 10 }} 
                               selected={labor} 
@@ -43,7 +61,7 @@ const ModalPlanilla = () => {
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {setModalVisible(!modalVisible);
-                              console.log(nombre, rut, edad, telefono, labor)}}>
+                              storeHomeItem()}}>
               <Text style={styles.textStyle}>Hide Modal</Text>
             </Pressable>
           </View>

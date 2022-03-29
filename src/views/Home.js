@@ -17,6 +17,7 @@ const DATA = [
     },
 ];
 
+
 const Home = () =>{
     
   const Item = ({ title }) => (

@@ -38,3 +38,5 @@ export const ColorPalette = {
   watts_blue: "#295283",
   watts_light_blue: "#D3DBE5",
 };
+
+
