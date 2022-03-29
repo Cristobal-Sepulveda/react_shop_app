@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo} from "react";
-import { View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal } from "react-native";
-
+import { View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal, Pressable, Div, h4} from "react-native";
+import ModalPlanilla from "./modals/ModalPlanilla";
 
 const DATA = [
     {
@@ -17,21 +17,8 @@ const DATA = [
     },
 ];
 
-const Home = ({navigation, param1}) =>{
-  const [modalVisible, setModalVisible] = useState(false);
+const Home = () =>{
     
-  const modalPlanilla = () => {
-    return (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={true}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}/>)
-  }
-
   const Item = ({ title }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>
@@ -51,10 +38,9 @@ const Home = ({navigation, param1}) =>{
               <Button title="sincronizar"/>
             </View>
             <View style={styles.buttonView}>
-              <Button title="agregar item"
-                      onPress={() => modalPlanilla()}/>
+              <ModalPlanilla/>
             </View>
-            <View style={styles.margenInferior}/>                  
+            <View style={styles.margenInferior}/>       
           </SafeAreaView>
          )
 };
@@ -84,5 +70,5 @@ const styles = StyleSheet.create({
     },
     margenInferior:{
       marginBottom: 16
-    }
+    },
   });
