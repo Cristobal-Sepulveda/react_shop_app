@@ -28,6 +28,14 @@ const ModalPlanilla = () => {
     }
   }
 
+  const clearModalTextInputs = () => {
+    setNombre("")
+    setRut("")
+    setEdad("")
+    setTelefono("")
+    setLabor("")
+  }
+
   return (
     <View style={styles.centeredView}>
       <Modal animationType="fade" 
@@ -61,6 +69,7 @@ const ModalPlanilla = () => {
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {setModalVisible(!modalVisible);
+                              clearModalTextInputs();
                               storeHomeItem()}}>
               <Text style={styles.textStyle}>Hide Modal</Text>
             </Pressable>
