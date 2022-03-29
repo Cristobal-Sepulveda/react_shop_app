@@ -1,25 +1,23 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, {useState} from "react";
 import { View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal, Pressable, Div, h4} from "react-native";
 import ModalPlanilla from "./modals/ModalPlanilla";
-
-const DATA = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from "react-native-web";
 
 
 const Home = () =>{
-    
+  const[data, setData] = useState([])
+  const loadingData = async () =>{
+    console.log("loadingData ejecutado")
+    try{
+      const aux = await AsyncStorage.getItem('homeItem')
+      setData(aux)
+      console.log(data)
+    }catch(e){
+      Alert.alert("error cargando data en flatList")
+    }
+  }
+  
   const Item = ({ title }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>
@@ -29,17 +27,16 @@ const Home = () =>{
   const renderItem = ({ item }) => (<Item title={item.title} />);
 
   return (<SafeAreaView style={styles.container}>
+            <Text style={styles.homeTitle}>Item List</Text>
             <FlatList
-              data={DATA}
+              data={data}
               renderItem={renderItem} 
               keyExtractor={item => item.id}
               numColumns={1}
+              backgroundColor="grey"
             />
             <View style={styles.buttonView}>
-              <Button title="sincronizar"/>
-            </View>
-            <View style={styles.buttonView}>
-              <ModalPlanilla/>
+              <ModalPlanilla onClose={loadingData}/>
             </View>
             <View style={styles.margenInferior}/>       
           </SafeAreaView>
@@ -61,11 +58,18 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         marginHorizontal: 16,
     },
+    homeTitle:{
+      fontSize: 48,
+      textAlign: 'center',
+      color: 'white',
+      backgroundColor:'black'
+    },
     title: {
         fontSize: 32,
         color: 'white'
     },
     buttonView:{
+      marginTop:8,
       marginBottom: 8,
       marginHorizontal:24,
     },

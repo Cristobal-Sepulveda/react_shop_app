@@ -43,7 +43,6 @@ const Login = ({navigation}) =>{
 };
 
 
-
 export default Login;
 
 const styles = StyleSheet.create({

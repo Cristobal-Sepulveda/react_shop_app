@@ -15,6 +15,7 @@
     "@react-navigation/native-stack": "^6.5.2",
     "@react-navigation/stack": "^6.1.1",
     "expo": "~44.0.0",
+    "expo-checkbox": "^2.0.0",
     "expo-radio-button": "^1.0.8",
     "expo-status-bar": "~1.2.0",
     "react": "17.0.1",
@@ -25,7 +26,8 @@
     "react-native-screens": "~3.10.1",
     "react-native-web": "0.17.1",
     "react-navigation": "^4.4.4",
-    "react-table": "^7.7.0"
+    "react-table": "^7.7.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

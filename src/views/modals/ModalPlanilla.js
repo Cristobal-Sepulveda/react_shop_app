@@ -1,27 +1,55 @@
 import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TextInput, Pressable, View } from 'react-native';
-import RadioButtonGroup, { RadioButtonItem } from 'expo-radio-button';
+import Checkbox from 'expo-checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ModalPlanilla = () => {
+const ModalPlanilla = ({onClose}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [nombre, setNombre] = useState("");
   const [rut, setRut] = useState("");
   const [edad, setEdad] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [labor, setLabor] = useState("");
+  const [completoChecked, setCompletoChecked] = useState(false);
+  const [hamburguesaChecked, setHamburguesaChecked] = useState(false);
+  const [jugoChecked, setJugoChecked] = useState(false);
+  const [bebidaChecked, setBebidaChecked] = useState(false);
 
-  const storeHomeItem = async () => {
+  
+
+  const cargarPedido = () =>{
+    const pedido = []
+    if(completoChecked){
+      pedido.push("completo")
+    }
+    if(hamburguesaChecked){
+      pedido.push("hamburguesa")
+    }
+    if(jugoChecked){
+      pedido.push("jugo")
+    }
+    if(bebidaChecked){
+      pedido.push("bebida")
+    }
+    return pedido 
+  }
+
+  const chargingFlatListWithitems = async () => {
     try {
+      //Aqui checkeo si tengo items en mi localStorage
       const aux = await AsyncStorage.getItem('homeItem')
-      if(aux != null){
-        const jsonValue = JSON.stringify({nombre, rut, edad, telefono, labor})
-        let aux2 = aux + jsonValue
-        console.log(aux)
-        console.log(aux2)
+      //si tengo
+      if(aux){
+        //creo una id para el item
+        const uuidv4 = require("uud/v4")
+        //preparo el item como un string
+        const jsonValue = JSON.stringify({uuidv4, nombre, rut, edad, telefono, cargarPedido})
+        //lo sumo al item anterior
+        const aux2 = aux + jsonValue
+        //lo guardo en mi localStorage de items
         await AsyncStorage.setItem("homeItem", aux2)
       }else{
-        return null
+        const jsonValue = JSON.stringify({nombre, rut, edad, telefono, cargarPedido})
+        await AsyncStorage.setItem("homeItem", jsonValue)    
       }
     } catch (e) {
       Alert.alert("Hubo un error en guardar su data, por favor, vuelva a completar el formulario")
@@ -33,7 +61,10 @@ const ModalPlanilla = () => {
     setRut("")
     setEdad("")
     setTelefono("")
-    setLabor("")
+    setCompletoChecked
+    setHamburguesaChecked
+    setJugoChecked
+    setBebidaChecked
   }
 
   return (
@@ -54,24 +85,47 @@ const ModalPlanilla = () => {
             <TextInput style={styles.textInput} placeHolder= "Ingrese edad" keyboardType="numeric" value={edad} onChangeText={setEdad} />
             <Text style={styles.modalTitle}>Ingrese telefono</Text>
             <TextInput style={styles.textInput} placeHolder= "Ingrese telefono" keyboardType="numeric" value={telefono} onChangeText={setTelefono} />
-            <Text style={styles.modalTitle}>Seleccione su ocupación</Text>
-            <RadioButtonGroup containerStyle={{ marginBottom: 10 }} 
-                              selected={labor} 
-                              onSelected={(value) => setLabor(value)} 
-                              radioBackground="blue">
-              <RadioButtonItem label="Estudiante" value="Estudiante" />
-              <RadioButtonItem label="Estudiante y Trabajador" value="Estudiante y Trabajador"/>
-              <RadioButtonItem label="Trabajador" value="Trabajador"/>
-              <RadioButtonItem label="Cesante" value="Cesante"/>
-              <RadioButtonItem label="Jubilado" value="Jubilado"/>              
-            </RadioButtonGroup>
-            
+            <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
+            <View style={styles.checkboxText}>
+              <Checkbox
+                value={completoChecked}
+                onValueChange={setCompletoChecked}
+                color={completoChecked ? '#4630EB' : undefined}/>
+              <Text>Completo</Text>
+            </View>
+            <View style={styles.checkboxText}>
+              <Checkbox
+                title="Hamburguesa"
+                value={hamburguesaChecked}
+                onValueChange={setHamburguesaChecked}
+                color={hamburguesaChecked ? '#4630EB' : undefined}/>
+              <Text>Hamburguesa</Text>  
+            </View>    
+            <View style={styles.checkboxText}>
+              <Checkbox
+                title="Jugo"
+                value={jugoChecked}
+                onValueChange={setJugoChecked}
+                color={jugoChecked ? '#4630EB' : undefined}/>    
+              <Text>Jugo</Text>  
+            </View>  
+            <View style={styles.checkboxText}>
+              <Checkbox
+                title="Bebida"
+                value={bebidaChecked}
+                onValueChange={setBebidaChecked}
+                color={bebidaChecked ? '#4630EB' : undefined}/>
+              <Text>Bebida</Text>
+            </View>                 
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {setModalVisible(!modalVisible);
                               clearModalTextInputs();
-                              storeHomeItem()}}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
+                              chargingFlatListWithitems()
+                              onClose()}
+
+                      }>
+              <Text style={styles.textStyle}>Guardar Usuario</Text>
             </Pressable>
           </View>
         </View>
@@ -133,7 +187,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     padding: 8
-},
+  },
+  checkboxText:{
+    flexDirection: 'row'
+  }
 });
 
 export default ModalPlanilla;
