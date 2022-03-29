@@ -7,6 +7,9 @@ import { Alert } from "react-native-web";
 
 const Home = () =>{
   const[data, setData] = useState([])
+
+  //esta funcion es llamada desde el modal y "refresca?" la FlatList?
+  //hay que hacer sync?
   const loadingData = async () =>{
     console.log("loadingData ejecutado")
     try{
@@ -17,6 +20,7 @@ const Home = () =>{
       Alert.alert("error cargando data en flatList")
     }
   }
+  
   
   const Item = ({ title }) => (
     <View style={styles.item}>

@@ -15,7 +15,8 @@ const ModalPlanilla = ({onClose}) => {
   const [bebidaChecked, setBebidaChecked] = useState(false);
 
   
-
+  /** esta funcion crea y retorna un String[] con valores según el o los checkbox que el
+      usuario haya seleccionado */
   const cargarPedido = () =>{
     const pedido = []
     if(completoChecked){
@@ -33,30 +34,35 @@ const ModalPlanilla = ({onClose}) => {
     return pedido 
   }
 
-  const chargingFlatListWithitems = async () => {
+  // esta funcion guarda, en localStorage, la data ingresada en la planilla-modal...
+  const cargandoFlatListConItems = async () => {
+    //se inicia el intento de trabajar con el localStorage
     try {
       //Aqui checkeo si tengo items en mi localStorage
       const aux = await AsyncStorage.getItem('homeItem')
-      //si tengo
+      //si tengo items en mi localStorage...
       if(aux){
-        //creo una id para el item
+        //creo una id para el nuevo item
         const uuidv4 = require("uud/v4")
-        //preparo el item como un string
+        //preparo el nuevo item como un string
         const jsonValue = JSON.stringify({uuidv4, nombre, rut, edad, telefono, cargarPedido})
         //lo sumo al item anterior
         const aux2 = aux + jsonValue
         //lo guardo en mi localStorage de items
-        await AsyncStorage.setItem("homeItem", aux2)
-      }else{
+        await AsyncStorage.setItem("homeItem", aux2)  
+      }else{//si no tengo items en mi localStorage...
+        //guardo el pedido generado y este será mi primer item en el localStorage
         const jsonValue = JSON.stringify({nombre, rut, edad, telefono, cargarPedido})
         await AsyncStorage.setItem("homeItem", jsonValue)    
       }
     } catch (e) {
-      Alert.alert("Hubo un error en guardar su data, por favor, vuelva a completar el formulario")
+      Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
   }
 
-  const clearModalTextInputs = () => {
+  /* esta funcion limpia los textInputs y checkbox del modal, con el objetivo de
+     desplegar un modal "nuevo" cada vez que se navege a este */
+  const limpiandoModalTextInputs = () => {
     setNombre("")
     setRut("")
     setEdad("")
@@ -67,6 +73,15 @@ const ModalPlanilla = ({onClose}) => {
     setBebidaChecked
   }
 
+
+  const enviarPedido = () => {
+    setModalVisible(!modalVisible);
+    limpiandoModalTextInputs();
+    cargandoFlatListConItems()
+    // esta es una funcion que trabaja con el hook en Home.js
+    onClose()
+  }
+    
   return (
     <View style={styles.centeredView}>
       <Modal animationType="fade" 
@@ -75,17 +90,26 @@ const ModalPlanilla = ({onClose}) => {
              onRequestClose={() => {Alert.alert('Modal has been closed.');
                                     setModalVisible(!modalVisible);
                             }}>
+        //diseño del modal
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            //views/components/TextTextInput
             <Text style={styles.modalTitle}>Ingrese nombre</Text>
             <TextInput style={styles.textInput} placeHolder= "Ingrese nombre" value={nombre} onChangeText={setNombre} />
+            //views/components/TextTextInput
             <Text style={styles.modalTitle}>Ingrese rut</Text>
             <TextInput style={styles.textInput} placeHolder= "Ingrese rut" keyboardType="numeric" value={rut} onChangeText={setRut} />
+            //views/components/TextTextInput
             <Text style={styles.modalTitle}>Ingrese edad</Text>
             <TextInput style={styles.textInput} placeHolder= "Ingrese edad" keyboardType="numeric" value={edad} onChangeText={setEdad} />
+            //views/components/TextTextInput
             <Text style={styles.modalTitle}>Ingrese telefono</Text>
             <TextInput style={styles.textInput} placeHolder= "Ingrese telefono" keyboardType="numeric" value={telefono} onChangeText={setTelefono} />
+
+
             <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
+
+            //views/components/CheckBoxText
             <View style={styles.checkboxText}>
               <Checkbox
                 value={completoChecked}
@@ -93,6 +117,7 @@ const ModalPlanilla = ({onClose}) => {
                 color={completoChecked ? '#4630EB' : undefined}/>
               <Text>Completo</Text>
             </View>
+            //views/components/CheckBoxText
             <View style={styles.checkboxText}>
               <Checkbox
                 title="Hamburguesa"
@@ -100,7 +125,8 @@ const ModalPlanilla = ({onClose}) => {
                 onValueChange={setHamburguesaChecked}
                 color={hamburguesaChecked ? '#4630EB' : undefined}/>
               <Text>Hamburguesa</Text>  
-            </View>    
+            </View>
+            //views/components/CheckBoxText    
             <View style={styles.checkboxText}>
               <Checkbox
                 title="Jugo"
@@ -108,7 +134,8 @@ const ModalPlanilla = ({onClose}) => {
                 onValueChange={setJugoChecked}
                 color={jugoChecked ? '#4630EB' : undefined}/>    
               <Text>Jugo</Text>  
-            </View>  
+            </View>
+            //views/components/CheckBoxText  
             <View style={styles.checkboxText}>
               <Checkbox
                 title="Bebida"
@@ -116,19 +143,22 @@ const ModalPlanilla = ({onClose}) => {
                 onValueChange={setBebidaChecked}
                 color={bebidaChecked ? '#4630EB' : undefined}/>
               <Text>Bebida</Text>
-            </View>                 
+            </View>
+
+
+            //boton para enviar pedido
             <Pressable
               style={[styles.button, styles.buttonClose]}
-              onPress={() => {setModalVisible(!modalVisible);
-                              clearModalTextInputs();
-                              chargingFlatListWithitems()
-                              onClose()}
+              onPress={() => {enviarPedido()}
 
                       }>
-              <Text style={styles.textStyle}>Guardar Usuario</Text>
-            </Pressable>
-          </View>
+              <Text style={styles.textStyle}>Envia Pedido</Text>
+            </Pressable>    
+
+          </View> 
         </View>
+        //diseño del modal//
+
       </Modal>
 
       <Pressable style={[styles.button, styles.buttonOpen]} onPress={() => setModalVisible(true)}>
