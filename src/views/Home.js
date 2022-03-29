@@ -1,7 +1,5 @@
-import React, {useEffect, useMemo} from "react";
-import { View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar } from "react-native";
-
-
+import React, {useState, useEffect, useMemo} from "react";
+import { View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal } from "react-native";
 
 
 const DATA = [
@@ -17,27 +15,48 @@ const DATA = [
       id: '58694a0f-3da1-471f-bd96-145571e29d72',
       title: 'Third Item',
     },
-  ];
-   
+];
 
 const Home = ({navigation, param1}) =>{
-    const Item = ({ title }) => (
-        <View style={styles.item}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-      );
-    const renderItem = ({ item }) => (
-            <Item title={item.title} />
-        );
+  const [modalVisible, setModalVisible] = useState(false);
+    
+  const modalPlanilla = () => {
+    return (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={true}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}/>)
+  }
 
-    return (<SafeAreaView style={styles.container}>
-                <FlatList
-                    data={DATA}
-                    renderItem={renderItem} 
-                    keyExtractor={item => item.id}
-                    numColumns={3}
-                />
-            </SafeAreaView>)
+  const Item = ({ title }) => (
+    <View style={styles.item}>
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
+  
+  const renderItem = ({ item }) => (<Item title={item.title} />);
+
+  return (<SafeAreaView style={styles.container}>
+            <FlatList
+              data={DATA}
+              renderItem={renderItem} 
+              keyExtractor={item => item.id}
+              numColumns={1}
+            />
+            <View style={styles.buttonView}>
+              <Button title="sincronizar"/>
+            </View>
+            <View style={styles.buttonView}>
+              <Button title="agregar item"
+                      onPress={() => modalPlanilla()}/>
+            </View>
+            <View style={styles.margenInferior}/>                  
+          </SafeAreaView>
+         )
 };
 
 export default Home;
@@ -50,12 +69,20 @@ const styles = StyleSheet.create({
     },
     
     item: {
-        backgroundColor: '#f9c2ff',
+        backgroundColor: 'blue',
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
     },
     title: {
         fontSize: 32,
+        color: 'white'
     },
+    buttonView:{
+      marginBottom: 8,
+      marginHorizontal:24,
+    },
+    margenInferior:{
+      marginBottom: 16
+    }
   });
