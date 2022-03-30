@@ -47,15 +47,19 @@ const ModalPlanilla = ({onClose}) => {
       const key = uuid.v4()
       //si tengo items en mi localStorage...
       if(aux){
+        console.log("cargandoFlatListConItems: la lista ya tenia items")
         //preparo el nuevo item como un string
         const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, cargarPedido})
         //lo sumo al item anterior
         const aux2 = aux + jsonValue
+        console.log(aux2)
         //lo guardo en mi localStorage de items
         await AsyncStorage.setItem("homeItem", aux2)  
       }else{//si no tengo items en mi localStorage...
         //guardo el pedido generado y este será mi primer item en el localStorage
+        console.log("cargandoFlatListConItems: la lista esta vacia")
         const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, cargarPedido})
+        console.log(jsonValue)
         await AsyncStorage.setItem("homeItem", jsonValue)
       }
     } catch (e) {
@@ -70,23 +74,23 @@ const ModalPlanilla = ({onClose}) => {
     setRut("")
     setEdad("")
     setTelefono("")
-    setCompletoChecked
-    setHamburguesaChecked
-    setJugoChecked
-    setBebidaChecked
+    setCompletoChecked(false)
+    setHamburguesaChecked(false)
+    setJugoChecked(false)
+    setBebidaChecked(false)
   }
 
 
   const enviarPedido = () => {
     if(nombre == '' || rut == '' || edad == '' || telefono == '' ){
-      Alert.alert("Recuerde llenar todos sus datos personales antes de solicitar su pedido")
+      Alert.alert("Debe ingresar todos sus datos antes de solicitar su pedido.")
     }else{
-      if(completoChecked == false && hamburguesaCHecked == false && jugoChecked == false && bebidaChecked == false){
-        Alert.alert("Para poder generar un pedido debe, a lo menos, seleccionar un producto")  
+      if(completoChecked == false && hamburguesaChecked == false && jugoChecked == false && bebidaChecked == false){
+        Alert.alert("Debe elegir a lo menos un producto antes de solicitar su pedido.")  
       }else{
-        setModalVisible(!modalVisible);
-        limpiandoModalTextInputs();
         cargandoFlatListConItems()
+        limpiandoModalTextInputs();
+        setModalVisible(!modalVisible);
         // esta es una funcion que la obtenemos desde la props recibida.
         onClose()  
       }
@@ -105,24 +109,29 @@ const ModalPlanilla = ({onClose}) => {
                             }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <CustomTextImput word= "nombre" hook={nombre} keyboardType="default" setHook={setNombre} />
-            <CustomTextImput word="rut" hook={rut} keyboardType="default" setHook={setRut} />
-            <CustomTextImput word="edad" hook={edad} keyboardType="numeric" setHook={setEdad} />
-            <CustomTextImput word="telefono" hook={telefono} keyboardType="numeric" setHook={setTelefono} />
+            <CustomTextImput word= "nombre"   hook={nombre}   keyboardType="default" setHook={setNombre} />
+            <CustomTextImput word= "rut"      hook={rut}      keyboardType="default" setHook={setRut} />
+            <CustomTextImput word= "edad"     hook={edad}     keyboardType="numeric" setHook={setEdad} />
+            <CustomTextImput word= "telefono" hook={telefono} keyboardType="numeric" setHook={setTelefono} />
 
             <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
 
-            <CustomCheckBox word="completo" productoChecked={completoChecked} setProductoChecked={setCompletoChecked}/>
-            <CustomCheckBox word="hamburguesa" productoChecked={hamburguesaChecked} setProductoChecked={setHamburguesaChecked}/>
-            <CustomCheckBox word="jugo" productoChecked={jugoChecked} setProductoChecked={setJugoChecked}/>
-            <CustomCheckBox word="bebida" productoChecked={bebidaChecked} setProductoChecked={setBebidaChecked}/>
+            <CustomCheckBox label="completo"    productoChecked={completoChecked}    setProductoChecked={setCompletoChecked}/>
+            <CustomCheckBox label="hamburguesa" productoChecked={hamburguesaChecked} setProductoChecked={setHamburguesaChecked}/>
+            <CustomCheckBox label="jugo"        productoChecked={jugoChecked}        setProductoChecked={setJugoChecked}/>
+            <CustomCheckBox label="bebida"      productoChecked={bebidaChecked}      setProductoChecked={setBebidaChecked}/>
 
 
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {enviarPedido()} }>
               <Text style={styles.textStyle}>Envia Pedido</Text>
-            </Pressable>    
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {setModalVisible(!modalVisible)} }>
+              <Text style={styles.textStyle}>Volver</Text>
+            </Pressable>       
 
           </View> 
         </View>
@@ -167,6 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
   },
   buttonClose: {
+    marginTop: 8,
     backgroundColor: '#2196F3',
   },
   textStyle: {

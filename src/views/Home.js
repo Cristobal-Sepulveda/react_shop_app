@@ -12,9 +12,10 @@ const Home = () =>{
   //hay que hacer sync?
   const loadingData = async () =>{
     try{
+      console.log("Home: loadingData")
       const aux = await AsyncStorage.getItem('homeItem')
+      console.log(aux)
       setData(aux)
-      console.log(data)
     }catch(e){
       Alert.alert("error cargando data en flatList")
     }
@@ -30,7 +31,7 @@ const Home = () =>{
   const renderItem = ({ item }) => (<Item title={item.title} />);
 
   return (<SafeAreaView style={styles.container}>
-            <Text style={styles.homeTitle}>Item List</Text>
+            <Text style={styles.homeTitle}>Lista de Pedidos</Text>
             <FlatList
               data={data}
               renderItem={renderItem} 
