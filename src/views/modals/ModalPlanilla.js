@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TextInput, Pressable, View } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {v1 as uuidv4} from 'uuid';
+import TextTextInput from '../components/TextTextInput';
+import CheckBoxText from '../components/CheckBoxText';
+
 
 const ModalPlanilla = ({onClose}) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -42,10 +46,9 @@ const ModalPlanilla = ({onClose}) => {
       const aux = await AsyncStorage.getItem('homeItem')
       //si tengo items en mi localStorage...
       if(aux){
-        //creo una id para el nuevo item
-        const uuidv4 = require("uud/v4")
+
         //preparo el nuevo item como un string
-        const jsonValue = JSON.stringify({uuidv4, nombre, rut, edad, telefono, cargarPedido})
+        const jsonValue = JSON.stringify({nombre, rut, edad, telefono, cargarPedido})
         //lo sumo al item anterior
         const aux2 = aux + jsonValue
         //lo guardo en mi localStorage de items
@@ -81,83 +84,40 @@ const ModalPlanilla = ({onClose}) => {
     // esta es una funcion que trabaja con el hook en Home.js
     onClose()
   }
-    
+
+
   return (
     <View style={styles.centeredView}>
+
       <Modal animationType="fade" 
              transparent={true} 
              visible={modalVisible} 
              onRequestClose={() => {Alert.alert('Modal has been closed.');
                                     setModalVisible(!modalVisible);
                             }}>
-        //diseño del modal
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            //views/components/TextTextInput
-            <Text style={styles.modalTitle}>Ingrese nombre</Text>
-            <TextInput style={styles.textInput} placeHolder= "Ingrese nombre" value={nombre} onChangeText={setNombre} />
-            //views/components/TextTextInput
-            <Text style={styles.modalTitle}>Ingrese rut</Text>
-            <TextInput style={styles.textInput} placeHolder= "Ingrese rut" keyboardType="numeric" value={rut} onChangeText={setRut} />
-            //views/components/TextTextInput
-            <Text style={styles.modalTitle}>Ingrese edad</Text>
-            <TextInput style={styles.textInput} placeHolder= "Ingrese edad" keyboardType="numeric" value={edad} onChangeText={setEdad} />
-            //views/components/TextTextInput
-            <Text style={styles.modalTitle}>Ingrese telefono</Text>
-            <TextInput style={styles.textInput} placeHolder= "Ingrese telefono" keyboardType="numeric" value={telefono} onChangeText={setTelefono} />
-
+            <TextTextInput word= "nombre" hook={nombre} keyboardType="default" setHook={setNombre} />
+            <TextTextInput word="rut" hook={rut} keyboardType="default" setHook={setRut} />
+            <TextTextInput word="edad" hook={edad} keyboardType="numeric" setHook={setEdad} />
+            <TextTextInput word="telefono" hook={telefono} keyboardType="numeric" setHook={setTelefono} />
 
             <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
 
-            //views/components/CheckBoxText
-            <View style={styles.checkboxText}>
-              <Checkbox
-                value={completoChecked}
-                onValueChange={setCompletoChecked}
-                color={completoChecked ? '#4630EB' : undefined}/>
-              <Text>Completo</Text>
-            </View>
-            //views/components/CheckBoxText
-            <View style={styles.checkboxText}>
-              <Checkbox
-                title="Hamburguesa"
-                value={hamburguesaChecked}
-                onValueChange={setHamburguesaChecked}
-                color={hamburguesaChecked ? '#4630EB' : undefined}/>
-              <Text>Hamburguesa</Text>  
-            </View>
-            //views/components/CheckBoxText    
-            <View style={styles.checkboxText}>
-              <Checkbox
-                title="Jugo"
-                value={jugoChecked}
-                onValueChange={setJugoChecked}
-                color={jugoChecked ? '#4630EB' : undefined}/>    
-              <Text>Jugo</Text>  
-            </View>
-            //views/components/CheckBoxText  
-            <View style={styles.checkboxText}>
-              <Checkbox
-                title="Bebida"
-                value={bebidaChecked}
-                onValueChange={setBebidaChecked}
-                color={bebidaChecked ? '#4630EB' : undefined}/>
-              <Text>Bebida</Text>
-            </View>
+            <CheckBoxText word="completo" productoChecked={completoChecked} setProductoChecked={setCompletoChecked}/>
+            <CheckBoxText word="hamburguesa" productoChecked={hamburguesaChecked} setProductoChecked={setHamburguesaChecked}/>
+            <CheckBoxText word="jugo" productoChecked={jugoChecked} setProductoChecked={setJugoChecked}/>
+            <CheckBoxText word="bebida" productoChecked={bebidaChecked} setProductoChecked={setBebidaChecked}/>
 
 
-            //boton para enviar pedido
             <Pressable
               style={[styles.button, styles.buttonClose]}
-              onPress={() => {enviarPedido()}
-
-                      }>
+              onPress={() => {enviarPedido()} }>
               <Text style={styles.textStyle}>Envia Pedido</Text>
             </Pressable>    
 
           </View> 
         </View>
-        //diseño del modal//
 
       </Modal>
 

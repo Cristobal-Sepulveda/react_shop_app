@@ -1,15 +1,17 @@
 import React from "react";
-import {Text, TextInput} from "react-native";
+import {View,Text, TextInput, StyleSheet} from "react-native";
 
 //como trabajar con los hooks de una screen desde un componente
-const TextTextInput = (ingreseKey, tipo) =>{
+const TextTextInput = ({word, hook, keyboardType, setHook}) =>{
     return(
         <View>
-            <Text style={styles.modalTitle}>{"Ingrese "+ingreseKey}</Text>
-            <TextInput style={styles.textInput} placeHolder= {"Ingrese "+ingreseKey} value={tipo} onChangeText={setXEnModalPlanilla} />    
+            <Text style={styles.modalTitle}>{"Ingrese "+word}</Text>
+            <TextInput style={styles.textInput} value={hook} keyboardType={keyboardType} onChangeText={setHook} />    
         </View>
     )
 }
+
+export default TextTextInput;
 
 const styles = StyleSheet.create({
     modalTitle: {
