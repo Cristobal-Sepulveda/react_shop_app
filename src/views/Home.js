@@ -1,12 +1,14 @@
 import React, {useState} from "react";
-import { View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal, Pressable, Div, h4} from "react-native";
+import { Alert, View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal, Pressable, Div, h4} from "react-native";
 import ModalPlanilla from "./modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Alert } from "react-native-web";
+import NetInfo from "@react-native-community/netinfo";
 
 
 const Home = () =>{
   const[data, setData] = useState([])
+  const[tipoConexion, setTipoConexion]= useState("")
+  const[connectionDetails, setConnectionDetails] = useState("")
 
   //esta funcion es llamada desde el modal y refresca la FlatList
   const loadingData = async () =>{
@@ -32,6 +34,26 @@ const Home = () =>{
   
   const renderItem = ({ item }) => (<Item title={item} />);
 
+  const obtenerNetworkConnections = () => {
+    NetInfo.fetch().then(state =>{
+      setTipoConexion(state.type)
+      setConnectionDetails(state.details.cellularGeneration)
+      if(tipoConexion == "wifi"){
+        Alert.alert("Pedidos sincronizados")
+        return true
+      }
+      if(tipoConexion == "cellular"){
+        if(connectionDetails == "4g"){
+          Alert.alert("Pedidos sincronizados")
+          return true
+        }else{
+          Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar los pedidos")
+          return false
+        }      
+      }
+    })
+  }
+
   return (<SafeAreaView style={styles.container}>
             <Text style={styles.homeTitle}>Lista de Pedidos</Text>
             <FlatList
@@ -40,10 +62,12 @@ const Home = () =>{
               keyExtractor={item => item.id}
               numColumns={1}
               backgroundColor="grey"
+              onScroll={obtenerNetworkConnections}
             />
             <View style={styles.buttonView}>
               <ModalPlanilla onClose={loadingData}/>
             </View>
+  
             <View style={styles.margenInferior}/>       
           </SafeAreaView>
          )
