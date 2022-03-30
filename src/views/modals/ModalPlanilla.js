@@ -36,33 +36,13 @@ const ModalPlanilla = ({onClose}) => {
     return pedido 
   }
 
-  // esta funcion guarda, en localStorage, la data ingresada en la planilla-modal...
-  const cargandoFlatListConItems = async () => {
-
-    //se inicia el intento de trabajar con el localStorage
+  // esta funcion guarda, en localStorage, el nuevo pedido generado
+  const cargandoAsyncStorage = async () => {
     try {
-      //Aqui checkeo si tengo items en mi localStorage
-      const aux = await AsyncStorage.getItem('homeItem')
-      //se obtiene una uuid
       const key = uuid.v4()
-      //si tengo items en mi localStorage...
-      if(aux){
-        console.log("cargandoFlatListConItems: la lista ya tenia items")
-        //preparo el nuevo item como un string
-        const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, cargarPedido})
-        //lo sumo al item anterior
-        const aux2 = aux + jsonValue
-        console.log(aux2)
-        //lo guardo en mi localStorage de items
-        await AsyncStorage.setItem("homeItem", aux2)  
-      }else{//si no tengo items en mi localStorage...
-        //guardo el pedido generado y este será mi primer item en el localStorage
-        console.log("cargandoFlatListConItems: la lista esta vacia")
-        const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, cargarPedido})
-        console.log(jsonValue)
-        await AsyncStorage.setItem("homeItem", jsonValue)
-      }
-    } catch (e) {
+      const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, cargarPedido})
+      await AsyncStorage.setItem(key, jsonValue)  
+      } catch (e) {
       Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
   }
@@ -88,7 +68,7 @@ const ModalPlanilla = ({onClose}) => {
       if(completoChecked == false && hamburguesaChecked == false && jugoChecked == false && bebidaChecked == false){
         Alert.alert("Debe elegir a lo menos un producto antes de solicitar su pedido.")  
       }else{
-        cargandoFlatListConItems()
+        cargandoAsyncStorage()
         limpiandoModalTextInputs();
         setModalVisible(!modalVisible);
         // esta es una funcion que la obtenemos desde la props recibida.

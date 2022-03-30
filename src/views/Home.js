@@ -8,17 +8,19 @@ import { Alert } from "react-native-web";
 const Home = () =>{
   const[data, setData] = useState([])
 
-  //esta funcion es llamada desde el modal y "refresca?" la FlatList?
-  //hay que hacer sync?
+  //esta funcion es llamada desde el modal y refresca la FlatList
   const loadingData = async () =>{
     try{
-      console.log("Home: loadingData")
-      const aux = await AsyncStorage.getItem('homeItem')
+      const aux = await AsyncStorage.getAllKeys()
       console.log(aux)
-      setData(aux)
-    }catch(e){
-      Alert.alert("error cargando data en flatList")
+      for(let i = 0; i < aux.length-1; i++){
+          const newItem = await AsyncStorage.getItem(aux[i])
+          data.push(newItem)
+        }
+      }catch(e){
+        Alert.alert("error cargando data en flatList")
     }
+    console.log("dataCargada"+ data)
   }
   
   
@@ -28,7 +30,7 @@ const Home = () =>{
     </View>
   );
   
-  const renderItem = ({ item }) => (<Item title={item.title} />);
+  const renderItem = ({ item }) => (<Item title={item} />);
 
   return (<SafeAreaView style={styles.container}>
             <Text style={styles.homeTitle}>Lista de Pedidos</Text>
