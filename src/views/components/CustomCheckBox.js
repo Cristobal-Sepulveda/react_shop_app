@@ -1,9 +1,9 @@
 import React from "react"
 import {View, Text, StyleSheet} from "react-native"
-import { CheckBox } from "expo-checkbox"
+import CheckBox from "expo-checkbox"
 
 //como trabajar con los hooks de una screen desde un componente
-const CheckBoxText = ({word, productoChecked, setProductoChecked}) => {
+const CustomCheckBox = ({label, productoChecked, setProductoChecked}) => {
     return(
         <View style={styles.checkboxTextRow}>
             <CheckBox
@@ -11,15 +11,19 @@ const CheckBoxText = ({word, productoChecked, setProductoChecked}) => {
                 onValueChange={setProductoChecked}
                 color={productoChecked? '#4630EB' : undefined}
             />
-            <Text>{word}</Text>
+            <Text style={styles.checkboxText}>{label}</Text>
         </View>
     )
 }
 
-export default CheckBoxText;
+export default CustomCheckBox
 
 const styles = StyleSheet.create({
     checkboxTextRow:{
-        flexDirection: 'row'
-      }
+        flexDirection: 'row',
+        marginBottom: 8
+    },
+    checkboxText:{
+        marginLeft: 8
+    }
 })

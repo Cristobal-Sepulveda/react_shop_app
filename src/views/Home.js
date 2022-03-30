@@ -11,7 +11,6 @@ const Home = () =>{
   //esta funcion es llamada desde el modal y "refresca?" la FlatList?
   //hay que hacer sync?
   const loadingData = async () =>{
-    console.log("loadingData ejecutado")
     try{
       const aux = await AsyncStorage.getItem('homeItem')
       setData(aux)
