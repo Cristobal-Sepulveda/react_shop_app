@@ -6,7 +6,7 @@ import NetInfo from "@react-native-community/netinfo";
 
 
 const Home = () =>{
-  const[data, setData] = useState([])
+  const[data, setData] = useState([""])
   const[isRefreshing, setIsRefreshing] = useState(true)
   const[tipoConexion, setTipoConexion]= useState("")
   const[connectionDetails, setConnectionDetails] = useState("")
@@ -14,18 +14,23 @@ const Home = () =>{
   
   const loadingData = async () =>{
     try{
+      setIsRefreshing(true)
       const aux = await AsyncStorage.getAllKeys()
+      const user = await AsyncStorage.getItem("user")
       console.log("listado de keys",aux)
-      for(let i = 0; i < aux.length-1; i++){
+      for(let i = 0; i < aux.length; i++){
           const item = await AsyncStorage.getItem(aux[i])
-          console.log("item en ciclo", item)
-          const existePedido = data.includes(item)
-          console.log("data.find",existePedido)
-          if( existePedido == false){
-            console.log("integrando pedido a la lista de items a desplegar")
-            data.push(item)    
+          if(item != user){
+            console.log("item en ciclo", item)
+            const existePedido = data.includes(item)
+            console.log("data.find",existePedido)
+            if( existePedido == false){
+              console.log("integrando pedido a la lista de items a desplegar")
+              data.push(item)
+            }
           }
       }
+      setIsRefreshing(false)
     }catch(e){
         Alert.alert("error cargando data en flatList")
     }
@@ -38,36 +43,32 @@ const Home = () =>{
   );
   
   const renderItem = ({ item }) =>{
-    console.log("renderItem", item)
-    return (<Item title={item} />);
+    if(item != ""){
+      console.log("renderItem", item)
+      return (<Item title={item} />);
+    }
+    return
   }
 
 
   const obtenerNetworkConnections = () => {
     NetInfo.fetch().then(state =>{
-      setIsRefreshing(true)
       console.log("obtenerNetworkConnections.then")
       setTipoConexion(state.type)
       setConnectionDetails(state.details.cellularGeneration)
-      //setIsRefreshing(true)
-      console.log(tipoConexion)
-      console.log(connectionDetails)
       if(tipoConexion == "wifi"){
         console.log("obtenerNetworkConnectionsWIFI")
         Alert.alert("Pedidos sincronizados")
-        loadingData()
       }
 
       if(tipoConexion == "cellular"){
         console.log("obtenerNetworkConnectionsCELULAR")
         if(connectionDetails == "4g"){
           Alert.alert("Pedidos sincronizados")
-          loadingData()
         }else{
           Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar los pedidos")
         }      
       }
-      setIsRefreshing(false)
     })
     .finally(state =>{
       console.log("obtenerNetworkConnections.finally")
@@ -79,19 +80,20 @@ const Home = () =>{
   
   useEffect(()=>{
     console.log("useEffect")
-    if(data.length === 0){
-      console.log("useEffect_LoadingData")
-      loadingData()
-    }
+    loadingData()
     setIsRefreshing(false)  
   })
 
   return (<SafeAreaView style={styles.container}>
-            <Text style={styles.homeTitle}>Lista de Pedidos</Text>
             <FlatList
               data={data}
               renderItem={renderItem} 
               keyExtractor={item => item.id}
+              ListHeaderComponent={(
+                <View>
+                  <Text style={styles.homeTitle}>Lista de Pedidos</Text>
+                  </View>
+              )}
               numColumns={1}
               backgroundColor="grey"
               refreshing = {isRefreshing}
