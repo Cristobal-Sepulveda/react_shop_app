@@ -7,7 +7,7 @@ import NetInfo from "@react-native-community/netinfo";
 
 const Home = () =>{
   const[data, setData] = useState([])
-  const[isRefreshing, setIsRefreshing] = useState(false)
+  const[isRefreshing, setIsRefreshing] = useState(true)
   const[tipoConexion, setTipoConexion]= useState("")
   const[connectionDetails, setConnectionDetails] = useState("")
   //esta funcion es llamada desde el modal y refresca la FlatList
@@ -15,20 +15,24 @@ const Home = () =>{
   const loadingData = async () =>{
     try{
       const aux = await AsyncStorage.getAllKeys()
-      console.log(aux)
+      console.log("listado de keys",aux)
       for(let i = 0; i < aux.length-1; i++){
-          const newItem = await AsyncStorage.getItem(aux[i])
-          data.push(newItem)
-        }
-      setIsRefreshing(!isRefreshing)
-      setIsRefreshing(!isRefreshing)
-      }catch(e){
+          const item = await AsyncStorage.getItem(aux[i])
+          console.log("item en ciclo", item)
+          const existePedido = data.includes(item)
+          console.log("data.find",existePedido)
+          if( existePedido == false){
+            console.log("integrando pedido a la lista de items a desplegar")
+            data.push(item)    
+          }
+      }
+    }catch(e){
         Alert.alert("error cargando data en flatList")
     }
     console.log("dataCargada"+ data)
+    setIsRefreshing(true)
   }
-  
-  
+ 
   const Item = ({ title }) =>(
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>
@@ -45,19 +49,18 @@ const Home = () =>{
       setTipoConexion(state.type)
       setConnectionDetails(state.details.cellularGeneration)
       if(tipoConexion == "wifi"){
-        Alert.alert("Pedidos sincronizados")
         setIsRefreshing(!isRefreshing)
-        return true
+        Alert.alert("Pedidos sincronizados")
+        loadingData
       }
+
       if(tipoConexion == "cellular"){
         if(connectionDetails == "4g"){
-          Alert.alert("Pedidos sincronizados")
           setIsRefreshing(!isRefreshing)
-          return true
+          Alert.alert("Pedidos sincronizados")
+          loadingData
         }else{
           Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar los pedidos")
-          setIsRefreshing(!isRefreshing)
-          return false
         }      
       }
     })
@@ -71,7 +74,7 @@ const Home = () =>{
               keyExtractor={item => item.id}
               numColumns={1}
               backgroundColor="grey"
-              refreshing = {isRefreshing}
+              refreshing = {false}
               onRefresh={obtenerNetworkConnections}
             />
             <View style={styles.buttonView}>
@@ -79,6 +82,7 @@ const Home = () =>{
             </View>
   
             <View style={styles.margenInferior}/>       
+
           </SafeAreaView>
          )
 };
@@ -89,7 +93,6 @@ export default Home;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: StatusBar.currentHeight || 0,
     },
     
     item: {
@@ -109,11 +112,9 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     buttonView:{
-      marginTop:8,
-      marginBottom: 8,
-      marginHorizontal:24,
+      
     },
     margenInferior:{
-      marginBottom: 16
+      marginBottom: 36
     },
   });

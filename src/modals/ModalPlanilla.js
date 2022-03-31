@@ -117,9 +117,8 @@ const ModalPlanilla = ({onClose}) => {
         </View>
 
       </Modal>
-
       <Pressable style={[styles.button, styles.buttonOpen]} onPress={() => setModalVisible(true)}>
-        <Text >Show Modal</Text>
+        <Text style={styles.textStyle} >Ingresar Pedido</Text>
       </Pressable>
     </View>
   );
@@ -153,7 +152,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: 'green',
+    backgroundColor: 'red',
+    width: 150,
+    height: 40,
+    marginTop: 16
   },
   buttonClose: {
     marginTop: 8,
@@ -161,7 +163,6 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: 'white',
-    fontWeight: 'bold',
     textAlign: 'center',
   },
   modalTitle: {
