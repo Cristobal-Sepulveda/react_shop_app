@@ -78,6 +78,11 @@ const Home = () =>{
 
   
   useEffect(()=>{
+    console.log("useEffect")
+    if(data.length === 0){
+      console.log("useEffect_LoadingData")
+      loadingData()
+    }
     setIsRefreshing(false)  
   })
 
