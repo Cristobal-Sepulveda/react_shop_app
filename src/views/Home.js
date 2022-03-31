@@ -29,8 +29,6 @@ const Home = () =>{
     }catch(e){
         Alert.alert("error cargando data en flatList")
     }
-    console.log("dataCargada"+ data)
-    setIsRefreshing(true)
   }
  
   const Item = ({ title }) =>(
@@ -42,29 +40,46 @@ const Home = () =>{
   const renderItem = ({ item }) =>{
     console.log("renderItem", item)
     return (<Item title={item} />);
-  } 
+  }
+
 
   const obtenerNetworkConnections = () => {
     NetInfo.fetch().then(state =>{
+      setIsRefreshing(true)
+      console.log("obtenerNetworkConnections.then")
       setTipoConexion(state.type)
       setConnectionDetails(state.details.cellularGeneration)
+      //setIsRefreshing(true)
+      console.log(tipoConexion)
+      console.log(connectionDetails)
       if(tipoConexion == "wifi"){
-        setIsRefreshing(!isRefreshing)
+        console.log("obtenerNetworkConnectionsWIFI")
         Alert.alert("Pedidos sincronizados")
-        loadingData
+        loadingData()
       }
 
       if(tipoConexion == "cellular"){
+        console.log("obtenerNetworkConnectionsCELULAR")
         if(connectionDetails == "4g"){
-          setIsRefreshing(!isRefreshing)
           Alert.alert("Pedidos sincronizados")
-          loadingData
+          loadingData()
         }else{
           Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar los pedidos")
         }      
       }
+      setIsRefreshing(false)
     })
+    .finally(state =>{
+      console.log("obtenerNetworkConnections.finally")
+      loadingData()      
+    })
+    
   }
+
+  
+  useEffect(()=>{
+    setIsRefreshing(false)  
+  })
 
   return (<SafeAreaView style={styles.container}>
             <Text style={styles.homeTitle}>Lista de Pedidos</Text>
@@ -74,8 +89,14 @@ const Home = () =>{
               keyExtractor={item => item.id}
               numColumns={1}
               backgroundColor="grey"
-              refreshing = {false}
+              refreshing = {isRefreshing}
               onRefresh={obtenerNetworkConnections}
+              ListEmptyComponent={( <View>
+                                      <Text>
+                                        no hay items para desplegar
+                                      </Text>
+                                    </View>
+              )}
             />
             <View style={styles.buttonView}>
               <ModalPlanilla onClose={loadingData}/>

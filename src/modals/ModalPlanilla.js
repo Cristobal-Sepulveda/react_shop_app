@@ -39,9 +39,9 @@ const ModalPlanilla = ({onClose}) => {
   // esta funcion guarda, en localStorage, el nuevo pedido generado
   const cargandoAsyncStorage = async () => {
     try {
-      const id = uuid.v4()
-      const jsonValue = JSON.stringify({id, nombre, rut, edad, telefono, cargarPedido})
-      await AsyncStorage.setItem(id, jsonValue)  
+      const key = uuid.v4()
+      const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, cargarPedido})
+      await AsyncStorage.setItem(key, jsonValue)  
       } catch (e) {
       Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
