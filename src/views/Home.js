@@ -3,15 +3,14 @@ import { Alert, View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaVie
 import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from "@react-native-community/netinfo";
+import { obtenerTipoConexion } from "../utils/funciones";
 
 
 const Home = () =>{
   const[data, setData] = useState([""])
   const[isRefreshing, setIsRefreshing] = useState(true)
-  const[tipoConexion, setTipoConexion]= useState("")
-  const[connectionDetails, setConnectionDetails] = useState("")
+
   //esta funcion es llamada desde el modal y refresca la FlatList
-  
   const loadingData = async () =>{
     try{
       setIsRefreshing(true)
@@ -35,13 +34,31 @@ const Home = () =>{
         Alert.alert("error cargando data en flatList")
     }
   }
- 
+
+  //funcion iniciada al hacer sync en la flatList...
+  const syncFlatList = async () => {
+    const userConexionType = await obtenerTipoConexion()
+    if(userConexionType.tipoConexion == "wifi"){
+      loadingData()
+      return Alert.alert("lista sincronizados")
+    }
+    if(userConexionType.tipoConexion == "cellular"){
+      if(userConexionType.connectionDetails == "4g"){
+        loadingData()
+        return Alert.alert("lista sincronizados")
+      }else{
+        return Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar el listado")
+      }      
+    }
+    return Alert.alert("Debes tener conexion a internet para poder sincronizar el listado")
+  }
+  
+  //metodos utilizados por FlatList
   const Item = ({ title }) =>(
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>
     </View>
   );
-  
   const renderItem = ({ item }) =>{
     if(item != ""){
       console.log("renderItem", item)
@@ -49,37 +66,10 @@ const Home = () =>{
     }
     return
   }
+  ///////////////////////////////////
 
-
-  const obtenerNetworkConnections = () => {
-    NetInfo.fetch().then(state =>{
-      console.log("obtenerNetworkConnections.then")
-      setTipoConexion(state.type)
-      setConnectionDetails(state.details.cellularGeneration)
-      if(tipoConexion == "wifi"){
-        console.log("obtenerNetworkConnectionsWIFI")
-        Alert.alert("Pedidos sincronizados")
-      }
-
-      if(tipoConexion == "cellular"){
-        console.log("obtenerNetworkConnectionsCELULAR")
-        if(connectionDetails == "4g"){
-          Alert.alert("Pedidos sincronizados")
-        }else{
-          Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar los pedidos")
-        }      
-      }
-    })
-    .finally(state =>{
-      console.log("obtenerNetworkConnections.finally")
-      loadingData()      
-    })
-    
-  }
-
-  
+  //esta funcion la uso para cargar la data antes de renderizar
   useEffect(()=>{
-    console.log("useEffect")
     loadingData()
     setIsRefreshing(false)  
   })
@@ -89,21 +79,20 @@ const Home = () =>{
               data={data}
               renderItem={renderItem} 
               keyExtractor={item => item.id}
+              numColumns={1}
+              backgroundColor="grey"
               ListHeaderComponent={(
                 <View>
                   <Text style={styles.homeTitle}>Lista de Pedidos</Text>
-                  </View>
-              )}
-              numColumns={1}
-              backgroundColor="grey"
+                </View>)}
+              ListEmptyComponent={( 
+                <View>
+                  <Text>
+                    no hay items para desplegar
+                  </Text>
+                </View>)}
               refreshing = {isRefreshing}
-              onRefresh={obtenerNetworkConnections}
-              ListEmptyComponent={( <View>
-                                      <Text>
-                                        no hay items para desplegar
-                                      </Text>
-                                    </View>
-              )}
+              onRefresh={syncFlatList}
             />
             <View style={styles.buttonView}>
               <ModalPlanilla onClose={loadingData}/>

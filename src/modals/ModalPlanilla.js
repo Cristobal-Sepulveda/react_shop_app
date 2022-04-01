@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Alert, Button, Modal, StyleSheet, Text, TextInput, Pressable, View } from 'react-native';
+import { Alert, Button, Modal, StyleSheet, Text, ToastAndroid, Pressable, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import CustomTextImput from '../components/CustomTextImput';
 import CustomCheckBox from '../components/CustomCheckBox';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
+import { obtenerTipoConexion } from '../utils/funciones';
 
 
 const ModalPlanilla = ({onClose}) => {
+  //hook para manejar la visibilidad de ModalPlanilla
   const [modalVisible, setModalVisible] = useState(false);
+  //hook's para cada una de las categorias en donde el usuario ingrese data...
   const [nombre, setNombre] = useState("");
   const [rut, setRut] = useState("");
   const [edad, setEdad] = useState("");
@@ -19,11 +22,16 @@ const ModalPlanilla = ({onClose}) => {
   const [jugoChecked, setJugoChecked] = useState(false);
   const [bebidaChecked, setBebidaChecked] = useState(false);
   const [productos, setProductos] = useState([])
+  //hook's para manejar los picker's
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [selectedEntrega, setSelectedLanguage] = useState();
 
+
+  const showToast = () => {
+    ToastAndroid.show("Pedido enviado", ToastAndroid.SHORT);
+  }
   /** esta funcion crea y retorna un String[] con valores según el o los checkbox que el
       usuario haya seleccionado */
   const cargarPedido = () =>{
@@ -68,19 +76,37 @@ const ModalPlanilla = ({onClose}) => {
     setProductos([])
   }
 
-
-  const enviarPedido = () => {
+  const enviarPedido = async () => {
     if(nombre == '' || rut == '' || edad == '' || telefono == '' ){
       Alert.alert("Debe ingresar todos sus datos antes de solicitar su pedido.")
     }else{
       if(completoChecked == false && hamburguesaChecked == false && jugoChecked == false && bebidaChecked == false){
         Alert.alert("Debe elegir a lo menos un producto antes de solicitar su pedido.")  
       }else{
-        cargandoAsyncStorage()
-        limpiandoModalTextInputs();
-        setModalVisible(!modalVisible);
-        // esta es una funcion que la obtenemos desde la props recibida.
-        onClose()  
+        const userConexionType = await obtenerTipoConexion()
+        if(userConexionType.tipoConexion == "wifi"){
+          cargandoAsyncStorage()
+          limpiandoModalTextInputs();
+          setModalVisible(!modalVisible);
+          // esta es una funcion que la obtenemos desde la props recibida.
+          onClose()
+          showToast()
+          return
+        }
+        if(userConexionType.tipoConexion == "cellular"){
+          if(userConexionType.connectionDetails == "4g"){
+            cargandoAsyncStorage()
+            limpiandoModalTextInputs();
+            setModalVisible(!modalVisible);
+            showToast()
+            // esta es una funcion que la obtenemos desde la props recibida.
+            onClose()
+            return
+          }else{
+            return Alert.alert("Tu conexion de celular debe ser wifi o 4g para poder enviar un pedido")
+          }      
+        }
+        return Alert.alert("Debes tener conexion a internet para poder enviar un pedido")
       }
     }
   }
