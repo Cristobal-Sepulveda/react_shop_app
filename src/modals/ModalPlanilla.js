@@ -18,37 +18,37 @@ const ModalPlanilla = ({onClose}) => {
   const [hamburguesaChecked, setHamburguesaChecked] = useState(false);
   const [jugoChecked, setJugoChecked] = useState(false);
   const [bebidaChecked, setBebidaChecked] = useState(false);
+  const [productos, setProductos] = useState([])
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState();
+  const [selectedEntrega, setSelectedLanguage] = useState();
 
   /** esta funcion crea y retorna un String[] con valores según el o los checkbox que el
       usuario haya seleccionado */
   const cargarPedido = () =>{
-    const pedido = []
     if(completoChecked){
-      pedido.push("completo")
+      productos.push("completo")
     }
     if(hamburguesaChecked){
-      pedido.push("hamburguesa")
+      productos.push("hamburguesa")
     }
     if(jugoChecked){
-      pedido.push("jugo")
+      productos.push("jugo")
     }
     if(bebidaChecked){
-      pedido.push("bebida")
+      productos.push("bebida")
     }
-    return pedido 
   }
 
   // esta funcion guarda, en localStorage, el nuevo pedido generado
   const cargandoAsyncStorage = async () => {
     try {
       const key = uuid.v4()
-      const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, cargarPedido})
+      cargarPedido()
+      const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, productos, date, selectedEntrega})
       await AsyncStorage.setItem(key, jsonValue)  
-      } catch (e) {
+      }catch (e) {
       Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
   }
@@ -64,6 +64,8 @@ const ModalPlanilla = ({onClose}) => {
     setHamburguesaChecked(false)
     setJugoChecked(false)
     setBebidaChecked(false)
+    setDate(new Date())
+    setProductos([])
   }
 
 
@@ -141,7 +143,7 @@ const ModalPlanilla = ({onClose}) => {
               )}
               <Text style={{marginTop:16}}>Elija modo de entrega</Text>
               <View style={styles.Picker}>
-                <Picker selectedValue={selectedLanguage}
+                <Picker selectedValue={selectedEntrega}
                         onValueChange={(itemValue, itemIndex) =>
                         setSelectedLanguage(itemValue)}>
                   <Picker.Item label="Despacho" value="Despacho" />
@@ -153,7 +155,7 @@ const ModalPlanilla = ({onClose}) => {
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => {enviarPedido()} }>
-                <Text style={styles.textStyle}>Envia Pedido</Text>
+                <Text style={styles.textStyle}>Enviar Pedido</Text>
               </Pressable>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
