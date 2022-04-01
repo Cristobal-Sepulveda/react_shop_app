@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Alert, Button, Modal, StyleSheet, Text, ToastAndroid, Pressable, View } from 'react-native';
+import { Alert, Modal, StyleSheet, Text, ToastAndroid, Pressable, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import CustomTextImput from '../components/CustomTextImput';
 import CustomCheckBox from '../components/CustomCheckBox';
-import {Picker} from '@react-native-picker/picker';
 import { obtenerTipoConexion } from '../utils/funciones';
 import BotonesEnviarPedidoYVolver from '../components/BotonesEnviarPedidoYVolver';
 import CustomPicker from '../components/CustonPicker';
 import CustomDatePicker from '../components/CustomDatePicker';
 
+
+//Este modal se usa en la view Home.js. El modal despliega una planilla que el usuario debe de completar al momento de querer hacer un pedido.
 const ModalPlanilla = ({onClose}) => {
   //hook para manejar la visibilidad de ModalPlanilla
   const [modalVisible, setModalVisible] = useState(false);
@@ -30,11 +31,14 @@ const ModalPlanilla = ({onClose}) => {
   const [selectedEntrega, setSelectedEntrega] = useState();
 
 
+  //mensaje temporal desplegado al momento en el que el pedido es enviado(siempre que se cumplan las condiciones)
   const showToast = () => {
     ToastAndroid.show("Pedido enviado", ToastAndroid.SHORT);
   }
-  /** esta funcion crea y retorna un String[] con valores según el o los checkbox que el
-      usuario haya seleccionado */
+  
+  /** Esta función añade productos al hook productos[], siempre y cuando el checkbox vinculado al producto este clickeado...
+   *  Cada vez que el usuario clickee o desclickee un checkbox, el hook vinculado a este toma el valor true o false, respectivamente.
+  */
   const cargarPedido = () =>{
     if(completoChecked){
       productos.push("completo")
@@ -77,6 +81,20 @@ const ModalPlanilla = ({onClose}) => {
     setProductos([])
   }
 
+  // Esta funcion inicia funciones que guardan el pedido en localStorage, limpia el modal, vuelve el modal invisible, carga la lista de flatlist y manda un toast...
+  const funcionalidadesAntesDeEnviarPedido = () =>{
+    cargandoAsyncStorage()
+    limpiandoModalTextInputs();
+    setModalVisible(!modalVisible);
+    showToast()
+    // esta es una funcion que la obtenemos desde la props recibida.
+    onClose()
+    
+  }
+
+  /**  Esta funcion primero checkea si el usuario puso sus datos personales, selecciono al menos un producto y si tiene o no wifi o 4g. Si este es el caso, el pedido se crea, sino,
+       se entrega una alerta según el caso.
+  */
   const enviarPedido = async () => {
     if(nombre == '' || rut == '' || edad == '' || telefono == '' ){
       Alert.alert("Debe ingresar todos sus datos antes de solicitar su pedido.")
@@ -86,22 +104,12 @@ const ModalPlanilla = ({onClose}) => {
       }else{
         const userConexionType = await obtenerTipoConexion()
         if(userConexionType.tipoConexion == "wifi"){
-          cargandoAsyncStorage()
-          limpiandoModalTextInputs();
-          setModalVisible(!modalVisible);
-          // esta es una funcion que la obtenemos desde la props recibida.
-          onClose()
-          showToast()
+          funcionalidadesAntesDeEnviarPedido()
           return
         }
         if(userConexionType.tipoConexion == "cellular"){
           if(userConexionType.connectionDetails == "4g"){
-            cargandoAsyncStorage()
-            limpiandoModalTextInputs();
-            setModalVisible(!modalVisible);
-            showToast()
-            // esta es una funcion que la obtenemos desde la props recibida.
-            onClose()
+            funcionalidadesAntesDeEnviarPedido()
             return
           }else{
             return Alert.alert("Tu conexion de celular debe ser wifi o 4g para poder enviar un pedido")
@@ -112,26 +120,10 @@ const ModalPlanilla = ({onClose}) => {
     }
   }
 
-
-  const showMode = (currentMode) => {
-    setShow(true)
-    setMode(currentMode)
-  }
-
-  const showDatepicker = () => {
-    showMode('date')
-  }
-
-  return (
-    <View style={styles.centeredView}>
-
-      <Modal animationType="fade" 
-             transparent={true} 
-             visible={modalVisible} 
-             onRequestClose={() => {Alert.alert('Modal has been closed.');
-                                    setModalVisible(!modalVisible);
-                            }}>
-        <View style={styles.centeredView}>
+  //componente que dibuja la planilla de interes al caso...
+  const Planilla = () =>{
+    return(
+      <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <CustomTextImput word= "nombre"   hook={nombre}   keyboardType="default" setHook={setNombre} />
             <CustomTextImput word= "rut"      hook={rut}      keyboardType="default" setHook={setRut} />
@@ -153,7 +145,19 @@ const ModalPlanilla = ({onClose}) => {
               <BotonesEnviarPedidoYVolver enviarPedido={enviarPedido} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
           </View> 
         </View>
+    )
+  }
 
+  return (
+    <View style={styles.centeredView}>
+
+      <Modal animationType="fade" 
+             transparent={true} 
+             visible={modalVisible} 
+             onRequestClose={() => {Alert.alert('Modal has been closed.');
+                                    setModalVisible(!modalVisible);
+                            }}>
+        <Planilla/>
       </Modal>
       <Pressable style={[styles.button, styles.buttonOpen]} onPress={() => setModalVisible(true)}>
         <Text style={styles.textStyle} >Ingresar Pedido</Text>
@@ -174,12 +178,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    //alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: {width: 0, height: 2,},
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,

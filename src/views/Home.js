@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react";
 import { Alert, View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal, Pressable, Div, h4} from "react-native";
 import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from "@react-native-community/netinfo";
 import { obtenerTipoConexion } from "../utils/funciones";
 
 
