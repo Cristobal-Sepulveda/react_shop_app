@@ -4,10 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import CustomTextImput from '../components/CustomTextImput';
 import CustomCheckBox from '../components/CustomCheckBox';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
 import { obtenerTipoConexion } from '../utils/funciones';
-
+import BotonesEnviarPedidoYVolver from '../components/BotonesEnviarPedidoYVolver';
+import CustomPicker from '../components/CustonPicker';
+import CustomDatePicker from '../components/CustomDatePicker';
 
 const ModalPlanilla = ({onClose}) => {
   //hook para manejar la visibilidad de ModalPlanilla
@@ -26,7 +27,7 @@ const ModalPlanilla = ({onClose}) => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-  const [selectedEntrega, setSelectedLanguage] = useState();
+  const [selectedEntrega, setSelectedEntrega] = useState();
 
 
   const showToast = () => {
@@ -111,13 +112,6 @@ const ModalPlanilla = ({onClose}) => {
     }
   }
 
-  const onChange = (event, selectedDate) => {
-    console.log("datetimerpicker")
-    setShow(false)
-    const currentDate = selectedDate
-    setDate(currentDate)
-
-  }
 
   const showMode = (currentMode) => {
     setShow(true)
@@ -143,7 +137,6 @@ const ModalPlanilla = ({onClose}) => {
             <CustomTextImput word= "rut"      hook={rut}      keyboardType="default" setHook={setRut} />
             <CustomTextImput word= "edad"     hook={edad}     keyboardType="numeric" setHook={setEdad} />
             <CustomTextImput word= "telefono" hook={telefono} keyboardType="numeric" setHook={setTelefono} />
-
             <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
             <View style={{flexDirection: 'row'}}>
               <View style={{marginEnd:8}}>
@@ -155,40 +148,9 @@ const ModalPlanilla = ({onClose}) => {
                 <CustomCheckBox label="bebida"      productoChecked={bebidaChecked}      setProductoChecked={setBebidaChecked}/>
               </View>
             </View>
-            <View style={{marginTop: 8}}>
-              <Button onPress={showDatepicker} title="Fecha de entrega" />
-            </View>
-            <Text>selected: {date.toLocaleString()}</Text>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={true}
-                  onChange={onChange}/>
-              )}
-              <Text style={{marginTop:16}}>Elija modo de entrega</Text>
-              <View style={styles.Picker}>
-                <Picker selectedValue={selectedEntrega}
-                        onValueChange={(itemValue, itemIndex) =>
-                        setSelectedLanguage(itemValue)}>
-                  <Picker.Item label="Despacho" value="Despacho" />
-                  <Picker.Item label="Retiro" value="Retiro" />
-                </Picker>
-              </View>
-
-            <View style={{flexDirection: 'row'}}>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => {enviarPedido()} }>
-                <Text style={styles.textStyle}>Enviar Pedido</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => {setModalVisible(!modalVisible)} }>
-                <Text style={styles.textStyle}>Volver</Text>
-              </Pressable>       
-            </View>                
+              <CustomDatePicker date={date} mode={mode} show={show} setShow={setShow} setMode={setMode}/>
+              <CustomPicker selectedEntrega={selectedEntrega} setSelectedEntrega={setSelectedEntrega}/>
+              <BotonesEnviarPedidoYVolver enviarPedido={enviarPedido} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
           </View> 
         </View>
 

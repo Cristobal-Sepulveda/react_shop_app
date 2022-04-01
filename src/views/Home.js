@@ -40,12 +40,12 @@ const Home = () =>{
     const userConexionType = await obtenerTipoConexion()
     if(userConexionType.tipoConexion == "wifi"){
       loadingData()
-      return Alert.alert("lista sincronizados")
+      return Alert.alert("lista sincronizada")
     }
     if(userConexionType.tipoConexion == "cellular"){
       if(userConexionType.connectionDetails == "4g"){
         loadingData()
-        return Alert.alert("lista sincronizados")
+        return Alert.alert("lista sincronizada")
       }else{
         return Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar el listado")
       }      
