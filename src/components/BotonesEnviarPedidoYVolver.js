@@ -1,6 +1,7 @@
 import React from "react";
 import {View, Pressable, Text, StyleSheet} from "react-native"
 
+/** Este componente es utilizado desde el componente Planilla, ubicado en ModalPlanilla.js */
 const BotonesEnviarPedidoYVolver = ({enviarPedido, modalVisible, setModalVisible}) => {
     return(
       <View style={{flexDirection: 'row'}}>

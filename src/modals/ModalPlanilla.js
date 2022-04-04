@@ -8,6 +8,7 @@ import { obtenerTipoConexion } from '../utils/funciones';
 import BotonesEnviarPedidoYVolver from '../components/BotonesEnviarPedidoYVolver';
 import CustomPicker from '../components/CustonPicker';
 import CustomDatePicker from '../components/CustomDatePicker';
+import { useEffect } from 'react/cjs/react.production.min';
 
 
 //Este modal se usa en la view Home.js. El modal despliega una planilla que el usuario debe de completar al momento de querer hacer un pedido.
@@ -28,7 +29,7 @@ const ModalPlanilla = ({onClose}) => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-  const [selectedEntrega, setSelectedEntrega] = useState();
+  const [selectedEntrega, setSelectedEntrega] = useState("");
 
 
   //mensaje temporal desplegado al momento en el que el pedido es enviado(siempre que se cumplan las condiciones)
@@ -41,26 +42,26 @@ const ModalPlanilla = ({onClose}) => {
   */
   const cargarPedido = () =>{
     if(completoChecked){
-      productos.push("completo")
+      setProductos(productos.push("completo"))
     }
     if(hamburguesaChecked){
-      productos.push("hamburguesa")
+      setProductos(productos.push("hamburguesa"))
     }
     if(jugoChecked){
-      productos.push("jugo")
+      setProductos(productos.push("jugo"))
     }
     if(bebidaChecked){
-      productos.push("bebida")
+      setProductos(productos.push("bebida"))
     }
   }
 
   // esta funcion guarda, en localStorage, el nuevo pedido generado
   const cargandoAsyncStorage = async () => {
     try {
-      const key = uuid.v4()
+      const id = uuid.v4()
       cargarPedido()
-      const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, productos, date, selectedEntrega})
-      await AsyncStorage.setItem(key, jsonValue)  
+      const jsonValue = JSON.stringify({id, nombre, rut, edad, telefono, productos, date, selectedEntrega})
+      await AsyncStorage.setItem(id, jsonValue)  
       }catch (e) {
       Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
@@ -120,7 +121,11 @@ const ModalPlanilla = ({onClose}) => {
     }
   }
 
-  //componente que dibuja la planilla de interes al caso...
+  /** Componente que dibuja la planilla de interes al caso.
+      El componente se mantiene aquí por la cantidad de hooks vinculantes... 
+      Este componente no se usará ya que cambia el comportamiento del teclado al ingresar
+      data. Al agregar un caracter a un TextInput, el componente se renderiza, bajando el keyboard.
+      */
   const Planilla = () =>{
     return(
       <View style={styles.centeredView}>
@@ -147,7 +152,7 @@ const ModalPlanilla = ({onClose}) => {
         </View>
     )
   }
-
+  
   return (
     <View style={styles.centeredView}>
 
@@ -157,7 +162,28 @@ const ModalPlanilla = ({onClose}) => {
              onRequestClose={() => {Alert.alert('Modal has been closed.');
                                     setModalVisible(!modalVisible);
                             }}>
-        <Planilla/>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <CustomTextImput word= "nombre"   hook={nombre}   keyboardType="default" setHook={setNombre} />
+                  <CustomTextImput word= "rut"      hook={rut}      keyboardType="default" setHook={setRut} />
+                  <CustomTextImput word= "edad"     hook={edad}     keyboardType="numeric" setHook={setEdad} />
+                  <CustomTextImput word= "telefono" hook={telefono} keyboardType="numeric" setHook={setTelefono} />
+                  <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{marginEnd:8}}>
+                      <CustomCheckBox label="completo"    productoChecked={completoChecked}    setProductoChecked={setCompletoChecked}/>
+                      <CustomCheckBox label="hamburguesa" productoChecked={hamburguesaChecked} setProductoChecked={setHamburguesaChecked}/>
+                    </View>
+                    <View>
+                      <CustomCheckBox label="jugo"        productoChecked={jugoChecked}        setProductoChecked={setJugoChecked}/>
+                      <CustomCheckBox label="bebida"      productoChecked={bebidaChecked}      setProductoChecked={setBebidaChecked}/>
+                    </View>
+                  </View>
+                  <CustomDatePicker date={date} mode={mode} show={show} setShow={setShow} setMode={setMode}/>
+                  <CustomPicker selectedEntrega={selectedEntrega} setSelectedEntrega={setSelectedEntrega}/>
+                  <BotonesEnviarPedidoYVolver enviarPedido={enviarPedido} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
+                </View> 
+              </View>
       </Modal>
       <Pressable style={[styles.button, styles.buttonOpen]} onPress={() => setModalVisible(true)}>
         <Text style={styles.textStyle} >Ingresar Pedido</Text>

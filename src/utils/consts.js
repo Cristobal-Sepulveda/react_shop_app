@@ -1,26 +1,6 @@
-/*
-       Nombre Archivo  : src/utils/consts.js
-Desarrollador inicial  : Gonzalo Perez
-Fecha de elaboración   : 03 de agosto de 2020
-Descripcion (que hace) : 
-       Modificado por  : 
-                Fecha  : 
-    Objetivo del edit  : 
-  Archivos referencia  : 
-   Variables iniciales : 
-   Variables resultado : ENVIRONMENT: string
-                         EMPRESA: string
-                         SERV_URL: string
-                         ColorPalette: {string x15}
-*/
 
-// export const ENVIRONMENT = "development";
-// export const EMPRESA = "WATTS";
 
-// export const SERV_URL = ENVIRONMENT === "development"
-//                           ? "http://devel.agrosat.cl:9000"
-//                           : "https://agrobook.agrosat.cl:9000";
-
+//paleta de colores de interes
 export const ColorPalette = {
   red: "#FE2401",
   blue: "#003474",

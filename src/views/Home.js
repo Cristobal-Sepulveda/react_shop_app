@@ -15,16 +15,14 @@ const Home = () =>{
       setIsRefreshing(true)
       const aux = await AsyncStorage.getAllKeys()
       const user = await AsyncStorage.getItem("user")
-      console.log("listado de keys",aux)
       for(let i = 0; i < aux.length; i++){
           const item = await AsyncStorage.getItem(aux[i])
+          console.log(JSON.parse(item))
+          
           if(item != user){
-            console.log("item en ciclo", item)
             const existePedido = data.includes(item)
-            console.log("data.find",existePedido)
             if( existePedido == false){
-              console.log("integrando pedido a la lista de items a desplegar")
-              data.push(item)
+              setData(data.push(item))
             }
           }
       }
@@ -55,12 +53,11 @@ const Home = () =>{
   //metodos utilizados por FlatList
   const Item = ({ title }) =>(
     <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>{(title)}</Text>
     </View>
   );
   const renderItem = ({ item }) =>{
     if(item != ""){
-      console.log("renderItem", item)
       return (<Item title={item} />);
     }
     return
@@ -110,7 +107,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    
     item: {
         backgroundColor: 'blue',
         padding: 20,
