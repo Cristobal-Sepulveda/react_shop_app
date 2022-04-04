@@ -4,7 +4,7 @@ import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
 import { connect } from 'react-redux';
-import { addFriend } from '../store/FriendsActions'
+import { addFriend, removeFriend } from '../store/FriendsActions'
 import { bindActionCreators } from 'redux';
 
 
@@ -84,6 +84,16 @@ const Home = (props) =>{
                 }/>
               ))
             }
+            {
+              props.friends.current.map((friend, index) => (
+              <Button
+                key={ friend }
+                title={ `remove ${ friend }` }
+                onPress={()=>
+                  props.removeFriend(index)
+                }/>
+              ))
+            }
             <FlatList
               data={data}
               renderItem={renderItem} 
@@ -114,13 +124,14 @@ const Home = (props) =>{
 };
 
 const mapStateToProps = (state) => {
-  const { friends } = state
-  return { friends }
+  const { friends, pedidos } = state
+  return { friends, pedidos}
 };
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({
     addFriend,
+    removeFriend
   }, dispatch)
 );
 
