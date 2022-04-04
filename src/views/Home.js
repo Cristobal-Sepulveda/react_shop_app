@@ -1,18 +1,17 @@
 import React, {useState, useEffect} from "react";
-import { Alert, View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaView, StatusBar, Modal, Pressable, Div, h4} from "react-native";
+import { Alert, View, Text, FlatList, Button, StyleSheet, SafeAreaView, ToastAndroid} from "react-native";
 import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
-import { normalizeRect } from "react-native/Libraries/StyleSheet/Rect";
+import { connect } from 'react-redux';
+import { addFriend } from '../store/FriendsActions'
+import { bindActionCreators } from 'redux';
 
-const DATA=[
-  {id: "123",
-   nombre: "primer item"}
-]
 
-const Home = () =>{
+const Home = (props) =>{
   const[data, setData] = useState([])
   const[isRefreshing, setIsRefreshing] = useState(true)
+
 
   //esta funcion es llamada desde el modal y refresca la FlatList
   const loadingData = async () =>{
@@ -67,15 +66,24 @@ const Home = () =>{
     }
     return
   }
-  ///////////////////////////////////
 
-  //esta funcion la uso para cargar la data antes de renderizar
   useEffect(()=>{
     loadingData()
     setIsRefreshing(false)  
   })
 
   return (<SafeAreaView style={styles.container}>
+            <Button title="asd" onPress={()=> console.log(props.friends)}/>
+            {
+              props.friends.possible.map((friend, index) => (
+              <Button
+                key={ friend }
+                title={ `Add ${ friend }` }
+                onPress={()=>
+                  props.addFriend(index)
+                }/>
+              ))
+            }
             <FlatList
               data={data}
               renderItem={renderItem} 
@@ -105,8 +113,18 @@ const Home = () =>{
          )
 };
 
-export default Home;
+const mapStateToProps = (state) => {
+  const { friends } = state
+  return { friends }
+};
 
+const mapDispatchToProps = dispatch => (
+  bindActionCreators({
+    addFriend,
+  }, dispatch)
+);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
 const styles = StyleSheet.create({
     container: {
@@ -133,5 +151,6 @@ const styles = StyleSheet.create({
     },
     margenInferior:{
       marginBottom: 36
-    },
-  });
+    }
+});
+

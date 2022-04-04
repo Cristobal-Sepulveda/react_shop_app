@@ -31,7 +31,6 @@ const ModalPlanilla = ({onClose}) => {
   const [show, setShow] = useState(false);
   const [selectedEntrega, setSelectedEntrega] = useState("");
 
-
   //mensaje temporal desplegado al momento en el que el pedido es enviado(siempre que se cumplan las condiciones)
   const showToast = () => {
     ToastAndroid.show("Pedido enviado", ToastAndroid.SHORT);
