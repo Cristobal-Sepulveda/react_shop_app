@@ -1,9 +1,16 @@
 import React from 'react'
-import Login from './src/views/Login';
-import AppContainer from './Navigator'
+import AppContainer from './Navigator';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react'
 
 export default function App() {
-  return <AppContainer/>
+  return( 
+    <Provider>
+      <PersistGate>
+        <AppContainer/>
+      </PersistGate>
+    </Provider>
+  )
 }
 
 

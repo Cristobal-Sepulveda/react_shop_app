@@ -3,10 +3,15 @@ import { Alert, View, Text, FlatList, Button, TextInput, StyleSheet, SafeAreaVie
 import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
+import { normalizeRect } from "react-native/Libraries/StyleSheet/Rect";
 
+const DATA=[
+  {id: "123",
+   nombre: "primer item"}
+]
 
 const Home = () =>{
-  const[data, setData] = useState([""])
+  const[data, setData] = useState([])
   const[isRefreshing, setIsRefreshing] = useState(true)
 
   //esta funcion es llamada desde el modal y refresca la FlatList
@@ -18,14 +23,14 @@ const Home = () =>{
       for(let i = 0; i < aux.length; i++){
           const item = await AsyncStorage.getItem(aux[i])
           console.log(JSON.parse(item))
-          
           if(item != user){
             const existePedido = data.includes(item)
             if( existePedido == false){
-              setData(data.push(item))
+              setData(data.concat(item))
             }
           }
       }
+      console.log("DATA A DESPLEGAR", data)
       setIsRefreshing(false)
     }catch(e){
         Alert.alert("error cargando data en flatList")
