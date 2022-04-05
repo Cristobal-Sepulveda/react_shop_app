@@ -8,11 +8,12 @@ import { obtenerTipoConexion } from '../utils/funciones';
 import BotonesEnviarPedidoYVolver from '../components/BotonesEnviarPedidoYVolver';
 import CustomPicker from '../components/CustonPicker';
 import CustomDatePicker from '../components/CustomDatePicker';
-import { useEffect } from 'react/cjs/react.production.min';
-import { actionCreators } from '../utils/pedidosListRedux';
+import * as Types from "../redux/types";
+import { connect } from "react-redux"
+
 
 //Este modal se usa en la view Home.js. El modal despliega una planilla que el usuario debe de completar al momento de querer hacer un pedido.
-const ModalPlanilla = ({state, onClose}) => {
+const ModalPlanilla = ({addPedido, onClose}) => {
   //hook para manejar la visibilidad de ModalPlanilla
   const [modalVisible, setModalVisible] = useState(false);
   //hook's para cada una de las categorias en donde el usuario ingrese data...
@@ -61,7 +62,8 @@ const ModalPlanilla = ({state, onClose}) => {
       const key = uuid.v4()
       cargarPedido()
       const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, productos, date, selectedEntrega})
-      await AsyncStorage.setItem(key, jsonValue)  
+      await AsyncStorage.setItem(key, jsonValue)
+      addPedido(key, nombre, rut, edad, telefono, productos, date, selectedEntrega)  
       }catch (e) {
       Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
@@ -121,37 +123,7 @@ const ModalPlanilla = ({state, onClose}) => {
     }
   }
 
-  /** Componente que dibuja la planilla de interes al caso.
-      El componente se mantiene aquí por la cantidad de hooks vinculantes... 
-      Este componente no se usará ya que cambia el comportamiento del teclado al ingresar
-      data. Al agregar un caracter a un TextInput, el componente se renderiza, bajando el keyboard.
-      */
-  const Planilla = () =>{
-    return(
-      <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <CustomTextImput word= "nombre"   hook={nombre}   keyboardType="default" setHook={setNombre} />
-            <CustomTextImput word= "rut"      hook={rut}      keyboardType="default" setHook={setRut} />
-            <CustomTextImput word= "edad"     hook={edad}     keyboardType="numeric" setHook={setEdad} />
-            <CustomTextImput word= "telefono" hook={telefono} keyboardType="numeric" setHook={setTelefono} />
-            <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
-            <View style={{flexDirection: 'row'}}>
-              <View style={{marginEnd:8}}>
-                <CustomCheckBox label="completo"    productoChecked={completoChecked}    setProductoChecked={setCompletoChecked}/>
-                <CustomCheckBox label="hamburguesa" productoChecked={hamburguesaChecked} setProductoChecked={setHamburguesaChecked}/>
-              </View>
-              <View>
-                <CustomCheckBox label="jugo"        productoChecked={jugoChecked}        setProductoChecked={setJugoChecked}/>
-                <CustomCheckBox label="bebida"      productoChecked={bebidaChecked}      setProductoChecked={setBebidaChecked}/>
-              </View>
-            </View>
-              <CustomDatePicker date={date} mode={mode} show={show} setShow={setShow} setMode={setMode}/>
-              <CustomPicker selectedEntrega={selectedEntrega} setSelectedEntrega={setSelectedEntrega}/>
-              <BotonesEnviarPedidoYVolver enviarPedido={enviarPedido} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
-          </View> 
-        </View>
-    )
-  }
+
   
   return (
     <View style={styles.centeredView}>
@@ -191,6 +163,22 @@ const ModalPlanilla = ({state, onClose}) => {
     </View>
   );
 };
+
+const mapStateToProps = (state) =>{
+  return state
+} 
+
+const mapDispatchToProps = dispatch =>({
+  addPedido: (key, nombre, rut, edad, telefono, productos, date, selectedEntrega) =>
+    dispatch({
+      type: Types.ADD_PEDIDO,
+      payload: {key,nombre,rut,edad,telefono,productos,date,selectedEntrega}
+    }),
+})
+
+const connectComponent = connect(mapStateToProps, mapDispatchToProps)
+
+export default connectComponent(ModalPlanilla);
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -252,5 +240,5 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ModalPlanilla;
+
 

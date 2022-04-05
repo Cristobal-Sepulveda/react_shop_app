@@ -26,20 +26,18 @@ const AuthLoading = ({addPedido, obtenerPedidos, navigation}) =>{
 
   const getPedidos = async () => {
     try{
-      console.log("getPedidos")
       const asyncStorageAllKeys = await AsyncStorage.getAllKeys()
       const user = await AsyncStorage.getItem("user")
       for(let i = 0; i < asyncStorageAllKeys.length; i++){
           const pedido = await AsyncStorage.getItem(asyncStorageAllKeys[i])
-          console.log(pedido)
+          const pedidoJSON = JSON.parse(pedido)
           if(pedido != user){
-            //const existePedido = data.includes(item)
-            if( existePedido == false){
-            }
+            addPedido(pedidoJSON.key, pedidoJSON.nombre, 
+                      pedidoJSON.rut, pedidoJSON.edad, 
+                      pedidoJSON.telefono, pedidoJSON.productos, 
+                      pedidoJSON.date, pedidoJSON.selectedEntrega)
           }
       }
-      console.log("data en store: ")
-      console.log("-> ",state.obtenerPedidos)
     }catch(e){
 
     }
@@ -47,27 +45,25 @@ const AuthLoading = ({addPedido, obtenerPedidos, navigation}) =>{
   }
 
   useEffect(() => {
-    //getPedidos()
-    // getUser()
+    getPedidos()
+    getUser()
   })
 
   return(
-    <View style = {{backgroundColor: "#000000"}}>
-      <Button title="asd" onPress={()=> {addPedido(3)}}/>
-    </View>
+    <View style = {{backgroundColor: "#000000"}}/>
    )
 }
 
 const mapStateToProps = (state) =>{
-  console.log(state.pedidos.allPedidos)
+  console.log("asd", state.pedidos.allPedidos)
   return state
 } 
 
 const mapDispatchToProps = dispatch =>({
-  addPedido: number =>
+  addPedido: (key, nombre, rut, edad, telefono, productos, date, selectedEntrega) =>
     dispatch({
       type: Types.ADD_PEDIDO,
-      payload: {number}
+      payload: {key,nombre,rut,edad,telefono,productos,date,selectedEntrega}
     }),
   obtenerPedidos: () => 
     dispatch({

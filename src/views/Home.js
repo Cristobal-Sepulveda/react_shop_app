@@ -3,11 +3,10 @@ import { Alert, View, Text, FlatList, Button, StyleSheet, SafeAreaView, ToastAnd
 import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import * as Types from "../redux/types";
+import { connect } from "react-redux"
 
-
-const Home = (props) =>{
+const Home = ({addPedido}) =>{
   const[data, setData] = useState([])
   const[isRefreshing, setIsRefreshing] = useState(true)
 
@@ -20,7 +19,7 @@ const Home = (props) =>{
       const user = await AsyncStorage.getItem("user")
       for(let i = 0; i < aux.length; i++){
           const item = await AsyncStorage.getItem(aux[i])
-          console.log(JSON.parse(item))
+          console.log("loadingData: Key en ciclo: ", JSON.parse(item))
           if(item != user){
             const existePedido = data.includes(item)
             if( existePedido == false){
@@ -28,7 +27,6 @@ const Home = (props) =>{
             }
           }
       }
-      console.log("DATA A DESPLEGAR", data)
       setIsRefreshing(false)
     }catch(e){
         Alert.alert("error cargando data en flatList")
@@ -59,6 +57,7 @@ const Home = (props) =>{
       <Text style={styles.title}>{(title)}</Text>
     </View>
   );
+
   const renderItem = ({ item }) =>{
     if(item != ""){
       return (<Item title={item} />);
@@ -72,27 +71,6 @@ const Home = (props) =>{
   })
 
   return (<SafeAreaView style={styles.container}>
-            <Button title="asd" onPress={()=> console.log(props.friends)}/>
-            {
-              props.friends.possible.map((friend, index) => (
-              <Button
-                key={ friend }
-                title={ `Add ${ friend }` }
-                onPress={()=>
-                  props.addFriend(index)
-                }/>
-              ))
-            }
-            {
-              props.friends.current.map((friend, index) => (
-              <Button
-                key={ friend }
-                title={ `remove ${ friend }` }
-                onPress={()=>
-                  props.removeFriend(index)
-                }/>
-              ))
-            }
             <FlatList
               data={data}
               renderItem={renderItem} 
@@ -122,19 +100,28 @@ const Home = (props) =>{
          )
 };
 
-const mapStateToProps = (state) => {
-  const { friends, pedidos } = state
-  return { friends, pedidos}
-};
 
-const mapDispatchToProps = dispatch => (
-  bindActionCreators({
-    addFriend,
-    removeFriend
-  }, dispatch)
-);
+const mapStateToProps = (state) =>{
+  console.log("\n\nmapStateToProps\n\n",state.pedidos.allPedidos,"\n\nmapStateToProps\n\n")
+  return state
+} 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+const mapDispatchToProps = dispatch =>({
+  addPedido: (key, nombre, rut, edad, telefono, productos, date, selectedEntrega) =>
+    dispatch({
+      type: Types.ADD_PEDIDO,
+      payload: {key,nombre,rut,edad,telefono,productos,date,selectedEntrega}
+    }),
+  obtenerPedidos: () => 
+    dispatch({
+      type: Types.OBTENER_PEDIDOS,
+      payload: {}
+    }),
+})
+
+const connectComponent = connect(mapStateToProps, mapDispatchToProps)
+
+export default connectComponent(Home);
 
 const styles = StyleSheet.create({
     container: {
