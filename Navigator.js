@@ -74,6 +74,8 @@ const Back = ({ navigation, variant = false, warning = false }) => (
   </TouchableOpacity>
 );
 
+
+
 const AppContainer = () => (
   <NavigationContainer>
     <Stack.Navigator
