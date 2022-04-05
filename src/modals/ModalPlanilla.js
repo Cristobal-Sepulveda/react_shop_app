@@ -13,7 +13,7 @@ import { connect } from "react-redux"
 
 
 //Este modal se usa en la view Home.js. El modal despliega una planilla que el usuario debe de completar al momento de querer hacer un pedido.
-const ModalPlanilla = ({addPedido, onClose}) => {
+const ModalPlanilla = ({addPedido}) => {
   //hook para manejar la visibilidad de ModalPlanilla
   const [modalVisible, setModalVisible] = useState(false);
   //hook's para cada una de las categorias en donde el usuario ingrese data...
@@ -37,11 +37,10 @@ const ModalPlanilla = ({addPedido, onClose}) => {
     ToastAndroid.show("Pedido enviado", ToastAndroid.SHORT);
 
   }
-  
-  /** Esta función añade productos al hook productos[], siempre y cuando el checkbox vinculado al producto este clickeado...
+    /** Esta función añade productos al hook productos[], siempre y cuando el checkbox vinculado al producto este clickeado...
    *  Cada vez que el usuario clickee o desclickee un checkbox, el hook vinculado a este toma el valor true o false, respectivamente.
   */
-  const cargarPedido = () =>{
+  const cargarProductosElegidos = () =>{
     if(completoChecked){
       setProductos(productos.push("completo"))
     }
@@ -56,18 +55,22 @@ const ModalPlanilla = ({addPedido, onClose}) => {
     }
   }
 
+
+
   // esta funcion guarda, en localStorage, el nuevo pedido generado
-  const cargandoAsyncStorage = async () => {
+  const cargandoAsyncStorageYStorage = async () => {
     try {
       const key = uuid.v4()
-      cargarPedido()
+      cargarProductosElegidos()
       const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, productos, date, selectedEntrega})
       await AsyncStorage.setItem(key, jsonValue)
-      addPedido(key, nombre, rut, edad, telefono, productos, date, selectedEntrega)  
+      addPedido(key, nombre, rut, edad, telefono, productos, date, selectedEntrega)
       }catch (e) {
       Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
   }
+
+
 
   /* esta funcion limpia los textInputs y checkbox del modal, con el objetivo de
      desplegar un modal "nuevo" cada vez que se navege a este */
@@ -84,15 +87,14 @@ const ModalPlanilla = ({addPedido, onClose}) => {
     setProductos([])
   }
 
+
+
   // Esta funcion inicia funciones que guardan el pedido en localStorage, limpia el modal, vuelve el modal invisible, carga la lista de flatlist y manda un toast...
   const prepararYEnviarPedido = () =>{
-    cargandoAsyncStorage()
+    cargandoAsyncStorageYStorage()
     limpiandoModalTextInputs();
     setModalVisible(!modalVisible);
     showToast()
-    // esta es una funcion que la obtenemos desde la props recibida.
-    onClose()
-    
   }
 
   /**  Esta funcion primero checkea si el usuario puso sus datos personales, selecciono al menos un producto y si tiene o no wifi o 4g. Si este es el caso, el pedido se crea, sino,
@@ -122,9 +124,7 @@ const ModalPlanilla = ({addPedido, onClose}) => {
       }
     }
   }
-
-
-  
+ 
   return (
     <View style={styles.centeredView}>
 
@@ -164,10 +164,11 @@ const ModalPlanilla = ({addPedido, onClose}) => {
   );
 };
 
+
+
 const mapStateToProps = (state) =>{
   return state
 } 
-
 const mapDispatchToProps = dispatch =>({
   addPedido: (key, nombre, rut, edad, telefono, productos, date, selectedEntrega) =>
     dispatch({
@@ -176,9 +177,11 @@ const mapDispatchToProps = dispatch =>({
     }),
 })
 
-const connectComponent = connect(mapStateToProps, mapDispatchToProps)
 
+const connectComponent = connect(mapStateToProps, mapDispatchToProps)
 export default connectComponent(ModalPlanilla);
+
+
 
 const styles = StyleSheet.create({
   centeredView: {

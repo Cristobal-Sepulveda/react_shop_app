@@ -6,32 +6,15 @@ import { obtenerTipoConexion } from "../utils/funciones";
 import * as Types from "../redux/types";
 import { connect } from "react-redux"
 
-const Home = ({addPedido}) =>{
-  const[data, setData] = useState([])
+const Home = ({addPedido, obtenerPedidos}) =>{
+  const[data, setData] = useState([""])
   const[isRefreshing, setIsRefreshing] = useState(true)
 
 
-  //esta funcion es llamada desde el modal y refresca la FlatList
-  const loadingData = async () =>{
-    try{
-      setIsRefreshing(true)
-      const aux = await AsyncStorage.getAllKeys()
-      const user = await AsyncStorage.getItem("user")
-      for(let i = 0; i < aux.length; i++){
-          const item = await AsyncStorage.getItem(aux[i])
-          console.log("loadingData: Key en ciclo: ", JSON.parse(item))
-          if(item != user){
-            const existePedido = data.includes(item)
-            if( existePedido == false){
-              setData(data.concat(item))
-            }
-          }
-      }
-      setIsRefreshing(false)
-    }catch(e){
-        Alert.alert("error cargando data en flatList")
-    }
+  const loadingData = () => {
+    
   }
+
 
   //funcion iniciada al hacer sync en la flatList...
   const syncFlatList = async () => {
@@ -66,7 +49,6 @@ const Home = ({addPedido}) =>{
   }
 
   useEffect(()=>{
-    loadingData()
     setIsRefreshing(false)  
   })
 
@@ -91,7 +73,7 @@ const Home = ({addPedido}) =>{
               onRefresh={syncFlatList}
             />
             <View style={styles.buttonView}>
-              <ModalPlanilla onClose={loadingData}/>
+              <ModalPlanilla setData={setData} data={data}/>
             </View>
   
             <View style={styles.margenInferior}/>       

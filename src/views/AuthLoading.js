@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Button } from "react-native";
+import React, {useEffect } from "react";
+import { View, } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Types from "../redux/types";
 import { connect } from "react-redux"
@@ -9,8 +9,7 @@ import { connect } from "react-redux"
  *  se guarda el usuario en localStorage con key 'user'.). Si el usuario existe,
  *  se navega a Home.js, si no existe, se navega a Login.js
 **/
-const AuthLoading = ({addPedido, obtenerPedidos, navigation}) =>{
-  const [data, setData]= useState([""])
+const AuthLoading = ({addPedido, navigation}) =>{
   
   const getUser = async () => {
     try {
@@ -55,7 +54,6 @@ const AuthLoading = ({addPedido, obtenerPedidos, navigation}) =>{
 }
 
 const mapStateToProps = (state) =>{
-  console.log("asd", state.pedidos.allPedidos)
   return state
 } 
 

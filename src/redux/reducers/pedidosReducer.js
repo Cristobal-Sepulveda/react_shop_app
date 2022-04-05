@@ -14,14 +14,21 @@ export default function(state = initialState, action) {
       // We do not want to alter state directly in case
       // another action is altering it at the same time
       const {allPedidos} = state
-      allPedidos.push(action.payload)
-      const newState = {allPedidos}
-      return newState
+      console.log(allPedidos)
+      console.log(allPedidos.includes(action.payload))
+      if(!allPedidos.includes(action.payload)){
+        allPedidos.push(action.payload)
+        const newState = {allPedidos}
+        return newState
+      }else{
+        const newState = {allPedidos}
+        return newState
+      }
+      
     }
 
     case Types.OBTENER_PEDIDOS: {
-      const {allPedidos} = state;
-      return allPedidos
+      return state
     }
 
     default:
