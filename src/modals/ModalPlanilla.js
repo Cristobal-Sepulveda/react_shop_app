@@ -9,7 +9,7 @@ import BotonesEnviarPedidoYVolver from '../components/BotonesEnviarPedidoYVolver
 import CustomPicker from '../components/CustonPicker';
 import CustomDatePicker from '../components/CustomDatePicker';
 import { useEffect } from 'react/cjs/react.production.min';
-
+import { actionCreators } from '../utils/pedidosListRedux';
 
 //Este modal se usa en la view Home.js. El modal despliega una planilla que el usuario debe de completar al momento de querer hacer un pedido.
 const ModalPlanilla = ({onClose}) => {
@@ -35,6 +35,7 @@ const ModalPlanilla = ({onClose}) => {
   //mensaje temporal desplegado al momento en el que el pedido es enviado(siempre que se cumplan las condiciones)
   const showToast = () => {
     ToastAndroid.show("Pedido enviado", ToastAndroid.SHORT);
+    console.log(props.create)
   }
   
   /** Esta función añade productos al hook productos[], siempre y cuando el checkbox vinculado al producto este clickeado...

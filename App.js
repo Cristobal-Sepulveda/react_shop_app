@@ -1,14 +1,14 @@
 import React from 'react'
 import AppContainer from './Navigator';
 import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react'
+import store from './src/redux/store';
+
 
 export default function App() {
+
   return( 
-    <Provider>
-      <PersistGate>
+    <Provider store={store}>
         <AppContainer/>
-      </PersistGate>
     </Provider>
   )
 }
