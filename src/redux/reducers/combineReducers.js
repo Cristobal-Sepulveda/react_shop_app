@@ -1,4 +1,4 @@
 import { combineReducers } from "redux";
-import pedidos from "./pedidos";
+import pedidosReducer from "./pedidosReducer";
 
-export default combineReducers({ pedidos, });
+export default combineReducers({ pedidos: pedidosReducer, });

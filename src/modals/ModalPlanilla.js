@@ -12,7 +12,7 @@ import { useEffect } from 'react/cjs/react.production.min';
 import { actionCreators } from '../utils/pedidosListRedux';
 
 //Este modal se usa en la view Home.js. El modal despliega una planilla que el usuario debe de completar al momento de querer hacer un pedido.
-const ModalPlanilla = ({onClose}) => {
+const ModalPlanilla = ({state, onClose}) => {
   //hook para manejar la visibilidad de ModalPlanilla
   const [modalVisible, setModalVisible] = useState(false);
   //hook's para cada una de las categorias en donde el usuario ingrese data...
@@ -35,7 +35,7 @@ const ModalPlanilla = ({onClose}) => {
   //mensaje temporal desplegado al momento en el que el pedido es enviado(siempre que se cumplan las condiciones)
   const showToast = () => {
     ToastAndroid.show("Pedido enviado", ToastAndroid.SHORT);
-    console.log(props.create)
+
   }
   
   /** Esta función añade productos al hook productos[], siempre y cuando el checkbox vinculado al producto este clickeado...
@@ -84,7 +84,7 @@ const ModalPlanilla = ({onClose}) => {
   }
 
   // Esta funcion inicia funciones que guardan el pedido en localStorage, limpia el modal, vuelve el modal invisible, carga la lista de flatlist y manda un toast...
-  const funcionalidadesAntesDeEnviarPedido = () =>{
+  const prepararYEnviarPedido = () =>{
     cargandoAsyncStorage()
     limpiandoModalTextInputs();
     setModalVisible(!modalVisible);
@@ -106,12 +106,12 @@ const ModalPlanilla = ({onClose}) => {
       }else{
         const userConexionType = await obtenerTipoConexion()
         if(userConexionType.tipoConexion == "wifi"){
-          funcionalidadesAntesDeEnviarPedido()
+          prepararYEnviarPedido()
           return
         }
         if(userConexionType.tipoConexion == "cellular"){
           if(userConexionType.connectionDetails == "4g"){
-            funcionalidadesAntesDeEnviarPedido()
+            prepararYEnviarPedido()
             return
           }else{
             return Alert.alert("Tu conexion de celular debe ser wifi o 4g para poder enviar un pedido")
