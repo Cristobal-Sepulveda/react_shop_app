@@ -4,15 +4,21 @@ import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
 import * as Types from "../redux/types";
-import { connect } from "react-redux"
+import { connect, useSelector } from "react-redux"
 
-const Home = ({addPedido, obtenerPedidos}) =>{
+
+const Home = () =>{
   const[data, setData] = useState([""])
   const[isRefreshing, setIsRefreshing] = useState(true)
 
 
-  const loadingData = () => {
+  const pedidosList = useSelector(state => state.pedidos.allPedidos)
     
+
+
+
+  const loadingData = () => {
+    console.log(data)
   }
 
 
@@ -52,11 +58,22 @@ const Home = ({addPedido, obtenerPedidos}) =>{
     setIsRefreshing(false)  
   })
 
+  useEffect(()=>{
+    let auxArray = []
+    for (let i = 0; i< pedidosList.length; i++){
+      if(!data.includes(JSON.stringify(pedidosList[i]))){
+        auxArray.push(JSON.stringify(pedidosList[i]))
+      }
+    }
+    setData(auxArray)
+  },[pedidosList])
+
   return (<SafeAreaView style={styles.container}>
+            <Button title="verStore" onPress={()=>loadingData()}/>
             <FlatList
               data={data}
               renderItem={renderItem} 
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.key}
               numColumns={1}
               backgroundColor="grey"
               ListHeaderComponent={(
@@ -73,7 +90,7 @@ const Home = ({addPedido, obtenerPedidos}) =>{
               onRefresh={syncFlatList}
             />
             <View style={styles.buttonView}>
-              <ModalPlanilla setData={setData} data={data}/>
+              <ModalPlanilla/>
             </View>
   
             <View style={styles.margenInferior}/>       
@@ -84,7 +101,7 @@ const Home = ({addPedido, obtenerPedidos}) =>{
 
 
 const mapStateToProps = (state) =>{
-  console.log("\n\nmapStateToProps\n\n",state.pedidos.allPedidos,"\n\nmapStateToProps\n\n")
+  console.log("\n\nHome.js-mapStateToProps\n\n",state.pedidos.allPedidos,"\n\nHome.js-mapStateToProps\n\n")
   return state
 } 
 

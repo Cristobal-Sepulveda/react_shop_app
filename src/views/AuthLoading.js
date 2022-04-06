@@ -2,7 +2,7 @@ import React, {useEffect } from "react";
 import { View, } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Types from "../redux/types";
-import { connect } from "react-redux"
+import { connect, useSelector } from "react-redux"
 
 /** Este componente es el primero que se ejecuta al iniciar la app y lo que hace
  *  es checkear si hay algun usuario con sesión iniciada (cada vez que se inicia sesión,
@@ -11,6 +11,7 @@ import { connect } from "react-redux"
 **/
 const AuthLoading = ({addPedido, navigation}) =>{
   
+
   const getUser = async () => {
     try {
       const user = await AsyncStorage.getItem('user')

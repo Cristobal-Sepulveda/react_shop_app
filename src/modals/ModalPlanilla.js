@@ -125,6 +125,7 @@ const ModalPlanilla = ({addPedido}) => {
     }
   }
  
+  
   return (
     <View style={styles.centeredView}>
 
