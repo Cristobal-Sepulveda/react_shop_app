@@ -7,28 +7,40 @@ import * as Types from "../redux/types";
 import { connect, useSelector } from "react-redux"
 
 
-const Home = () =>{
-  const[data, setData] = useState([""])
+const Home = ({addPedido}) =>{
   const[isRefreshing, setIsRefreshing] = useState(true)
 
 
   const pedidosList = useSelector(state => {
     const auxArray = []
     for (let i = 0; i< state.pedidos.allPedidos.length; i++){
-      if(!data.includes(JSON.stringify(state.pedidos.allPedidos[i]))){
         auxArray.push(JSON.stringify(state.pedidos.allPedidos[i]))
-      }
     }
     return auxArray
   })
     
-
-
-
-  const loadingData = () => {
-    console.log(data)
+  //metodo que consulta el asyncstorage y agrega a la lista aquellos pedidos
+  // que por abc motivo no se cargaron en el store
+  const loadingData= async () =>{
+    try{
+      const asyncStorageAllKeys = await AsyncStorage.getAllKeys()
+      const user = await AsyncStorage.getItem("user")
+      for(let i = 0; i < asyncStorageAllKeys.length; i++){
+          const pedido = await AsyncStorage.getItem(asyncStorageAllKeys[i])
+          const pedidoJSON = JSON.parse(pedido)
+          if(pedido != user){
+            if(!state.pedidos.allPedidos.includes(pedido)){
+              addPedido(pedidoJSON.key, pedidoJSON.nombre, 
+                        pedidoJSON.rut, pedidoJSON.edad, 
+                        pedidoJSON.telefono, pedidoJSON.productos, 
+                        pedidoJSON.date, pedidoJSON.selectedEntrega)
+            }
+          }
+      }
+    }catch(e){
+    }
+    
   }
-
 
   //funcion iniciada al hacer sync en la flatList...
   const syncFlatList = async () => {
@@ -66,12 +78,8 @@ const Home = () =>{
     setIsRefreshing(false)  
   })
 
-  useEffect(()=>{
-    setData(data)
-  },[pedidosList])
 
   return (<SafeAreaView style={styles.container}>
-            <Button title="verStore" onPress={()=>loadingData()}/>
             <FlatList
               data={pedidosList}
               renderItem={renderItem} 
@@ -103,7 +111,6 @@ const Home = () =>{
 
 
 const mapStateToProps = (state) =>{
-  console.log("\n\nHome.js-mapStateToProps\n\n",state.pedidos.allPedidos,"\n\nHome.js-mapStateToProps\n\n")
   return state
 } 
 
@@ -112,11 +119,6 @@ const mapDispatchToProps = dispatch =>({
     dispatch({
       type: Types.ADD_PEDIDO,
       payload: {key,nombre,rut,edad,telefono,productos,date,selectedEntrega}
-    }),
-  obtenerPedidos: () => 
-    dispatch({
-      type: Types.OBTENER_PEDIDOS,
-      payload: {}
     }),
 })
 

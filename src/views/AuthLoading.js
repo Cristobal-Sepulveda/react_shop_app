@@ -39,7 +39,6 @@ const AuthLoading = ({addPedido, navigation}) =>{
           }
       }
     }catch(e){
-
     }
     
   }
@@ -63,11 +62,6 @@ const mapDispatchToProps = dispatch =>({
     dispatch({
       type: Types.ADD_PEDIDO,
       payload: {key,nombre,rut,edad,telefono,productos,date,selectedEntrega}
-    }),
-  obtenerPedidos: () => 
-    dispatch({
-      type: Types.OBTENER_PEDIDOS,
-      payload: {}
     }),
 })
 

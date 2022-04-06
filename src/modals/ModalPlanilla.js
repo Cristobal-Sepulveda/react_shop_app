@@ -125,7 +125,7 @@ const ModalPlanilla = ({addPedido}) => {
     }
   }
  
-  
+  //
   return (
     <View style={styles.centeredView}>
 
@@ -135,6 +135,7 @@ const ModalPlanilla = ({addPedido}) => {
              onRequestClose={() => {Alert.alert('Modal has been closed.');
                                     setModalVisible(!modalVisible);
                             }}>
+              {/* Esta parte no la converti a componente xq al hacerlo ocurrian problemas con el teclado(escribia un caracter y el teclado se cerraba)*/}
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <CustomTextImput word= "nombre"   hook={nombre}   keyboardType="default" setHook={setNombre} />
@@ -157,6 +158,7 @@ const ModalPlanilla = ({addPedido}) => {
                   <BotonesEnviarPedidoYVolver enviarPedido={enviarPedido} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
                 </View> 
               </View>
+              {/* Esta parte no la converti a componente xq al hacerlo ocurrian problemas con el teclado(escribia un caracter y el teclado se cerraba)*/}
       </Modal>
       <Pressable style={[styles.button, styles.buttonOpen]} onPress={() => setModalVisible(true)}>
         <Text style={styles.textStyle} >Ingresar Pedido</Text>
