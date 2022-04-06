@@ -12,7 +12,13 @@ const Home = () =>{
   const[isRefreshing, setIsRefreshing] = useState(true)
 
 
-  const pedidosList = useSelector(state => state.pedidos.allPedidos)
+  const pedidosList = useSelector(state => {
+    for (let i = 0; i< state.pedidos.allPedidos.length; i++){
+      if(!data.includes(JSON.stringify(state.pedidos.allPedidos[i]))){
+        data.push(JSON.stringify(state.pedidos.allPedidos[i]))
+      }
+    }
+  })
     
 
 
@@ -58,15 +64,6 @@ const Home = () =>{
     setIsRefreshing(false)  
   })
 
-  useEffect(()=>{
-    let auxArray = []
-    for (let i = 0; i< pedidosList.length; i++){
-      if(!data.includes(JSON.stringify(pedidosList[i]))){
-        auxArray.push(JSON.stringify(pedidosList[i]))
-      }
-    }
-    setData(auxArray)
-  },[pedidosList])
 
   return (<SafeAreaView style={styles.container}>
             <Button title="verStore" onPress={()=>loadingData()}/>
