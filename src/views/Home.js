@@ -79,27 +79,6 @@ const Home = ({addPedido}) =>{
 
 
   return (<SafeAreaView style={styles.container}>
-            <Button title="asd" onPress={()=> console.log(props.friends)}/>
-            {
-              props.friends.possible.map((friend, index) => (
-              <Button
-                key={ friend }
-                title={ `Add ${ friend }` }
-                onPress={()=>
-                  props.addFriend(index)
-                }/>
-              ))
-            }
-            {
-              props.friends.current.map((friend, index) => (
-              <Button
-                key={ friend }
-                title={ `remove ${ friend }` }
-                onPress={()=>
-                  props.removeFriend(index)
-                }/>
-              ))
-            }
             <FlatList
               data={pedidosList}
               renderItem={renderItem} 

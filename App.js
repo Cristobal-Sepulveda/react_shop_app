@@ -4,9 +4,6 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import store from './src/redux/store';
 
-
-const store = createStore();
-
 export default function App() {
   return(
     <Provider store={store}>
