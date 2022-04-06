@@ -13,11 +13,13 @@ const Home = () =>{
 
 
   const pedidosList = useSelector(state => {
+    const auxArray = []
     for (let i = 0; i< state.pedidos.allPedidos.length; i++){
       if(!data.includes(JSON.stringify(state.pedidos.allPedidos[i]))){
-        data.push(JSON.stringify(state.pedidos.allPedidos[i]))
+        auxArray.push(JSON.stringify(state.pedidos.allPedidos[i]))
       }
     }
+    return auxArray
   })
     
 
@@ -64,11 +66,14 @@ const Home = () =>{
     setIsRefreshing(false)  
   })
 
+  useEffect(()=>{
+    setData(data)
+  },[pedidosList])
 
   return (<SafeAreaView style={styles.container}>
             <Button title="verStore" onPress={()=>loadingData()}/>
             <FlatList
-              data={data}
+              data={pedidosList}
               renderItem={renderItem} 
               keyExtractor={item => item.key}
               numColumns={1}
