@@ -4,16 +4,18 @@ import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
 import { connect, useSelector } from "react-redux"
+import { addValidStylePropTypes } from "react-native/Libraries/StyleSheet/StyleSheetValidation";
 
 
 const Home = ({addPedido}) =>{
   const[isRefreshing, setIsRefreshing] = useState(true)
-
+  const[data, setData] = useState([])
 
   const pedidosList = useSelector(state => {
     const auxArray = []
     for (let i = 0; i< state.pedidos.allPedidos.length; i++){
         auxArray.push(JSON.stringify(state.pedidos.allPedidos[i]))
+        //auxArray.push(state.pedidos.allPedidos[i])
     }
     return auxArray
   })
@@ -43,6 +45,7 @@ const Home = ({addPedido}) =>{
 
   //funcion iniciada al hacer sync en la flatList...
   const syncFlatList = async () => {
+    setIsRefreshing(false)
     const userConexionType = await obtenerTipoConexion()
     if(userConexionType.tipoConexion == "wifi"){
       loadingData()
@@ -59,30 +62,31 @@ const Home = ({addPedido}) =>{
     return Alert.alert("Debes tener conexion a internet para poder sincronizar el listado")
   }
   
-  //metodos utilizados por FlatList
-  const Item = ({ title }) =>(
-    <View style={styles.item}>
-      <Text style={styles.title}>{(title)}</Text>
-    </View>
-  );
-
   const renderItem = ({ item }) =>{
-    if(item != ""){
-      return (<Item title={item} />);
-    }
-    return
+      return (<View style={styles.item}>
+                <Text style={styles.title}>{item}</Text>
+              </View>)
   }
 
   useEffect(()=>{
-    setIsRefreshing(false)  
-  })
+    loadingData()
+    setIsRefreshing(false)
+  },[])
+
+  useEffect(()=>{
+    if(pedidosList.length && !data.includes(pedidosList[(pedidosList.length-1)])){
+      setData(prevData =>[...prevData, pedidosList[(pedidosList.length-1)]])
+    }
+  },[pedidosList])
+  
+  
 
 
   return (<SafeAreaView style={styles.container}>
             <FlatList
-              data={pedidosList}
-              renderItem={renderItem} 
-              keyExtractor={item => item.key}
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.key}
               numColumns={1}
               backgroundColor="grey"
               ListHeaderComponent={(
