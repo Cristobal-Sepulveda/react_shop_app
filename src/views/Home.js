@@ -3,37 +3,42 @@ import { Alert, View, Text, FlatList, Button, StyleSheet, SafeAreaView, ToastAnd
 import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
-import { connect } from 'react-redux';
-import { addFriend, removeFriend } from '../store/FriendsActions'
-import { bindActionCreators } from 'redux';
+import { connect, useSelector } from "react-redux"
 
 
-const Home = (props) =>{
-  const[data, setData] = useState([])
+const Home = ({addPedido}) =>{
   const[isRefreshing, setIsRefreshing] = useState(true)
 
 
-  //esta funcion es llamada desde el modal y refresca la FlatList
-  const loadingData = async () =>{
+  const pedidosList = useSelector(state => {
+    const auxArray = []
+    for (let i = 0; i< state.pedidos.allPedidos.length; i++){
+        auxArray.push(JSON.stringify(state.pedidos.allPedidos[i]))
+    }
+    return auxArray
+  })
+    
+  //metodo que consulta el asyncstorage y agrega a la lista aquellos pedidos
+  // que por abc motivo no se cargaron en el store
+  const loadingData= async () =>{
     try{
-      setIsRefreshing(true)
-      const aux = await AsyncStorage.getAllKeys()
+      const asyncStorageAllKeys = await AsyncStorage.getAllKeys()
       const user = await AsyncStorage.getItem("user")
-      for(let i = 0; i < aux.length; i++){
-          const item = await AsyncStorage.getItem(aux[i])
-          console.log(JSON.parse(item))
-          if(item != user){
-            const existePedido = data.includes(item)
-            if( existePedido == false){
-              setData(data.concat(item))
+      for(let i = 0; i < asyncStorageAllKeys.length; i++){
+          const pedido = await AsyncStorage.getItem(asyncStorageAllKeys[i])
+          const pedidoJSON = JSON.parse(pedido)
+          if(pedido != user){
+            if(!state.pedidos.allPedidos.includes(pedido)){
+              addPedido(pedidoJSON.key, pedidoJSON.nombre, 
+                        pedidoJSON.rut, pedidoJSON.edad, 
+                        pedidoJSON.telefono, pedidoJSON.productos, 
+                        pedidoJSON.date, pedidoJSON.selectedEntrega)
             }
           }
       }
-      console.log("DATA A DESPLEGAR", data)
-      setIsRefreshing(false)
     }catch(e){
-        Alert.alert("error cargando data en flatList")
     }
+    
   }
 
   //funcion iniciada al hacer sync en la flatList...
@@ -60,6 +65,7 @@ const Home = (props) =>{
       <Text style={styles.title}>{(title)}</Text>
     </View>
   );
+
   const renderItem = ({ item }) =>{
     if(item != ""){
       return (<Item title={item} />);
@@ -68,9 +74,9 @@ const Home = (props) =>{
   }
 
   useEffect(()=>{
-    loadingData()
     setIsRefreshing(false)  
   })
+
 
   return (<SafeAreaView style={styles.container}>
             <Button title="asd" onPress={()=> console.log(props.friends)}/>
@@ -95,9 +101,9 @@ const Home = (props) =>{
               ))
             }
             <FlatList
-              data={data}
+              data={pedidosList}
               renderItem={renderItem} 
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.key}
               numColumns={1}
               backgroundColor="grey"
               ListHeaderComponent={(
@@ -114,7 +120,7 @@ const Home = (props) =>{
               onRefresh={syncFlatList}
             />
             <View style={styles.buttonView}>
-              <ModalPlanilla onClose={loadingData}/>
+              <ModalPlanilla/>
             </View>
   
             <View style={styles.margenInferior}/>       
@@ -123,19 +129,23 @@ const Home = (props) =>{
          )
 };
 
-const mapStateToProps = (state) => {
-  const { friends, pedidos } = state
-  return { friends, pedidos}
-};
 
-const mapDispatchToProps = dispatch => (
-  bindActionCreators({
-    addFriend,
-    removeFriend
-  }, dispatch)
-);
+const mapStateToProps = (state) =>{
+  return state
+} 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+const mapDispatchToProps = dispatch =>({
+  addPedido: (key, nombre, rut, edad, telefono, productos, date, selectedEntrega) =>
+    dispatch({
+      type: Types.ADD_PEDIDO,
+      payload: {key,nombre,rut,edad,telefono,productos,date,selectedEntrega}
+    }),
+})
+
+const connectComponent = connect(mapStateToProps, mapDispatchToProps)
+
+export default connectComponent(Home);
+
 
 const styles = StyleSheet.create({
     container: {

@@ -2,10 +2,10 @@ import React from 'react'
 import AppContainer from './Navigator';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import friendsReducer from './src/store/FriendsReducer';
+import store from './src/redux/store';
 
 
-const store = createStore(friendsReducer);
+const store = createStore();
 
 export default function App() {
   return(

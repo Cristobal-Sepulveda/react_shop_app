@@ -8,11 +8,12 @@ import { obtenerTipoConexion } from '../utils/funciones';
 import BotonesEnviarPedidoYVolver from '../components/BotonesEnviarPedidoYVolver';
 import CustomPicker from '../components/CustonPicker';
 import CustomDatePicker from '../components/CustomDatePicker';
-import { useEffect } from 'react/cjs/react.production.min';
+import * as Types from "../redux/types";
+import { connect } from "react-redux"
 
 
 //Este modal se usa en la view Home.js. El modal despliega una planilla que el usuario debe de completar al momento de querer hacer un pedido.
-const ModalPlanilla = ({onClose}) => {
+const ModalPlanilla = ({addPedido}) => {
   //hook para manejar la visibilidad de ModalPlanilla
   const [modalVisible, setModalVisible] = useState(false);
   //hook's para cada una de las categorias en donde el usuario ingrese data...
@@ -34,12 +35,12 @@ const ModalPlanilla = ({onClose}) => {
   //mensaje temporal desplegado al momento en el que el pedido es enviado(siempre que se cumplan las condiciones)
   const showToast = () => {
     ToastAndroid.show("Pedido enviado", ToastAndroid.SHORT);
+
   }
-  
-  /** Esta función añade productos al hook productos[], siempre y cuando el checkbox vinculado al producto este clickeado...
+    /** Esta función añade productos al hook productos[], siempre y cuando el checkbox vinculado al producto este clickeado...
    *  Cada vez que el usuario clickee o desclickee un checkbox, el hook vinculado a este toma el valor true o false, respectivamente.
   */
-  const cargarPedido = () =>{
+  const cargarProductosElegidos = () =>{
     if(completoChecked){
       setProductos(productos.push("completo"))
     }
@@ -54,17 +55,22 @@ const ModalPlanilla = ({onClose}) => {
     }
   }
 
+
+
   // esta funcion guarda, en localStorage, el nuevo pedido generado
-  const cargandoAsyncStorage = async () => {
+  const cargandoAsyncStorageYStorage = async () => {
     try {
       const key = uuid.v4()
-      cargarPedido()
+      cargarProductosElegidos()
       const jsonValue = JSON.stringify({key, nombre, rut, edad, telefono, productos, date, selectedEntrega})
-      await AsyncStorage.setItem(key, jsonValue)  
+      await AsyncStorage.setItem(key, jsonValue)
+      addPedido(key, nombre, rut, edad, telefono, productos, date, selectedEntrega)
       }catch (e) {
       Alert.alert("Hubo un error en guardar su pedido, por favor, vuelva a completar el formulario")
     }
   }
+
+
 
   /* esta funcion limpia los textInputs y checkbox del modal, con el objetivo de
      desplegar un modal "nuevo" cada vez que se navege a este */
@@ -81,15 +87,14 @@ const ModalPlanilla = ({onClose}) => {
     setProductos([])
   }
 
+
+
   // Esta funcion inicia funciones que guardan el pedido en localStorage, limpia el modal, vuelve el modal invisible, carga la lista de flatlist y manda un toast...
-  const funcionalidadesAntesDeEnviarPedido = () =>{
-    cargandoAsyncStorage()
+  const prepararYEnviarPedido = () =>{
+    cargandoAsyncStorageYStorage()
     limpiandoModalTextInputs();
     setModalVisible(!modalVisible);
     showToast()
-    // esta es una funcion que la obtenemos desde la props recibida.
-    onClose()
-    
   }
 
   /**  Esta funcion primero checkea si el usuario puso sus datos personales, selecciono al menos un producto y si tiene o no wifi o 4g. Si este es el caso, el pedido se crea, sino,
@@ -104,12 +109,12 @@ const ModalPlanilla = ({onClose}) => {
       }else{
         const userConexionType = await obtenerTipoConexion()
         if(userConexionType.tipoConexion == "wifi"){
-          funcionalidadesAntesDeEnviarPedido()
+          prepararYEnviarPedido()
           return
         }
         if(userConexionType.tipoConexion == "cellular"){
           if(userConexionType.connectionDetails == "4g"){
-            funcionalidadesAntesDeEnviarPedido()
+            prepararYEnviarPedido()
             return
           }else{
             return Alert.alert("Tu conexion de celular debe ser wifi o 4g para poder enviar un pedido")
@@ -119,39 +124,8 @@ const ModalPlanilla = ({onClose}) => {
       }
     }
   }
-
-  /** Componente que dibuja la planilla de interes al caso.
-      El componente se mantiene aquí por la cantidad de hooks vinculantes... 
-      Este componente no se usará ya que cambia el comportamiento del teclado al ingresar
-      data. Al agregar un caracter a un TextInput, el componente se renderiza, bajando el keyboard.
-      */
-  const Planilla = () =>{
-    return(
-      <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <CustomTextImput word= "nombre"   hook={nombre}   keyboardType="default" setHook={setNombre} />
-            <CustomTextImput word= "rut"      hook={rut}      keyboardType="default" setHook={setRut} />
-            <CustomTextImput word= "edad"     hook={edad}     keyboardType="numeric" setHook={setEdad} />
-            <CustomTextImput word= "telefono" hook={telefono} keyboardType="numeric" setHook={setTelefono} />
-            <Text style={styles.modalTitle}>Seleccione sus pedidos</Text> 
-            <View style={{flexDirection: 'row'}}>
-              <View style={{marginEnd:8}}>
-                <CustomCheckBox label="completo"    productoChecked={completoChecked}    setProductoChecked={setCompletoChecked}/>
-                <CustomCheckBox label="hamburguesa" productoChecked={hamburguesaChecked} setProductoChecked={setHamburguesaChecked}/>
-              </View>
-              <View>
-                <CustomCheckBox label="jugo"        productoChecked={jugoChecked}        setProductoChecked={setJugoChecked}/>
-                <CustomCheckBox label="bebida"      productoChecked={bebidaChecked}      setProductoChecked={setBebidaChecked}/>
-              </View>
-            </View>
-              <CustomDatePicker date={date} mode={mode} show={show} setShow={setShow} setMode={setMode}/>
-              <CustomPicker selectedEntrega={selectedEntrega} setSelectedEntrega={setSelectedEntrega}/>
-              <BotonesEnviarPedidoYVolver enviarPedido={enviarPedido} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
-          </View> 
-        </View>
-    )
-  }
-  
+ 
+  //
   return (
     <View style={styles.centeredView}>
 
@@ -161,6 +135,7 @@ const ModalPlanilla = ({onClose}) => {
              onRequestClose={() => {Alert.alert('Modal has been closed.');
                                     setModalVisible(!modalVisible);
                             }}>
+              {/* Esta parte no la converti a componente xq al hacerlo ocurrian problemas con el teclado(escribia un caracter y el teclado se cerraba)*/}
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <CustomTextImput word= "nombre"   hook={nombre}   keyboardType="default" setHook={setNombre} />
@@ -183,6 +158,7 @@ const ModalPlanilla = ({onClose}) => {
                   <BotonesEnviarPedidoYVolver enviarPedido={enviarPedido} modalVisible={modalVisible} setModalVisible={setModalVisible}/>
                 </View> 
               </View>
+              {/* Esta parte no la converti a componente xq al hacerlo ocurrian problemas con el teclado(escribia un caracter y el teclado se cerraba)*/}
       </Modal>
       <Pressable style={[styles.button, styles.buttonOpen]} onPress={() => setModalVisible(true)}>
         <Text style={styles.textStyle} >Ingresar Pedido</Text>
@@ -190,6 +166,25 @@ const ModalPlanilla = ({onClose}) => {
     </View>
   );
 };
+
+
+
+const mapStateToProps = (state) =>{
+  return state
+} 
+const mapDispatchToProps = dispatch =>({
+  addPedido: (key, nombre, rut, edad, telefono, productos, date, selectedEntrega) =>
+    dispatch({
+      type: Types.ADD_PEDIDO,
+      payload: {key,nombre,rut,edad,telefono,productos,date,selectedEntrega}
+    }),
+})
+
+
+const connectComponent = connect(mapStateToProps, mapDispatchToProps)
+export default connectComponent(ModalPlanilla);
+
+
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -251,5 +246,5 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ModalPlanilla;
+
 
