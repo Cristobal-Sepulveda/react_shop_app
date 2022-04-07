@@ -75,6 +75,7 @@ const Home = ({addPedido}) =>{
     setIsRefreshing(false)
   },[])
 
+
   useEffect(()=>{
     if(pedidosList.length&& !data.includes(pedidosList[(pedidosList.length-1)])){
       if(data.length === 0 && pedidosList.length>0 && !data.includes(pedidosList[(pedidosList.length-1)])){
@@ -85,6 +86,7 @@ const Home = ({addPedido}) =>{
         setData(prevData =>[...prevData, pedidosList[(pedidosList.length-1)]])    
       }
     }
+    console.log(data[0])
   },[pedidosList])
   
   
@@ -94,7 +96,7 @@ const Home = ({addPedido}) =>{
             <FlatList
               data={data}
               renderItem={renderItem}
-              keyExtractor={(item) => item.key}
+              keyExtractor={(item) => JSON.parse(item).key}
               numColumns={1}
               backgroundColor="grey"
               ListHeaderComponent={(
