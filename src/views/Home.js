@@ -4,7 +4,7 @@ import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
 import { connect, useSelector } from "react-redux"
-import { addValidStylePropTypes } from "react-native/Libraries/StyleSheet/StyleSheetValidation";
+
 
 
 const Home = ({addPedido}) =>{
@@ -69,8 +69,6 @@ const Home = ({addPedido}) =>{
   }
 
   useEffect(()=>{
-    console.log("USE EFFECT: inicio de sesion")
-    console.log(data)
     loadingData()
     setIsRefreshing(false)
   },[])
@@ -86,7 +84,6 @@ const Home = ({addPedido}) =>{
         setData(prevData =>[...prevData, pedidosList[(pedidosList.length-1)]])    
       }
     }
-    console.log(data[0])
   },[pedidosList])
   
   

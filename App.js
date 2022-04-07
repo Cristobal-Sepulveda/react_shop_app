@@ -1,7 +1,6 @@
 import React from 'react'
 import AppContainer from './Navigator';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import store from './src/redux/store';
 
 export default function App() {
