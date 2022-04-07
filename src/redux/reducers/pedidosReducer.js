@@ -5,7 +5,7 @@ const initialState = {
   allPedidos: [],
 };
 
-export default function(state = initialState, action) {
+export default function pedidos(state = initialState, action) {
   switch (action.type) {
 
     case Types.ADD_PEDIDO: {

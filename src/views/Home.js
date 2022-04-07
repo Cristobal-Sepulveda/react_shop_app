@@ -5,7 +5,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
 import { connect, useSelector } from "react-redux"
 
-
+export const loadingData= async () =>{
+  try{
+    const asyncStorageAllKeys = await AsyncStorage.getAllKeys()
+    const user = await AsyncStorage.getItem("user")
+    for(let i = 0; i < asyncStorageAllKeys.length; i++){
+        const pedido = await AsyncStorage.getItem(asyncStorageAllKeys[i])
+        const pedidoJSON = JSON.parse(pedido)
+        if(pedido != user){
+          if(!state.pedidos.allPedidos.includes(pedido)){
+            addPedido(pedidoJSON.key, pedidoJSON.nombre, 
+                      pedidoJSON.rut, pedidoJSON.edad, 
+                      pedidoJSON.telefono, pedidoJSON.productos, 
+                      pedidoJSON.date, pedidoJSON.selectedEntrega)
+          }
+        }
+    }
+    console.log(state.allPedidos)
+    return state.allPedidos
+  }catch(e){
+  }
+  
+}
 
 const Home = ({addPedido}) =>{
   const[isRefreshing, setIsRefreshing] = useState(true)
@@ -22,26 +43,7 @@ const Home = ({addPedido}) =>{
     
   //metodo que consulta el asyncstorage y agrega a la lista aquellos pedidos
   // que por abc motivo no se cargaron en el store
-  const loadingData= async () =>{
-    try{
-      const asyncStorageAllKeys = await AsyncStorage.getAllKeys()
-      const user = await AsyncStorage.getItem("user")
-      for(let i = 0; i < asyncStorageAllKeys.length; i++){
-          const pedido = await AsyncStorage.getItem(asyncStorageAllKeys[i])
-          const pedidoJSON = JSON.parse(pedido)
-          if(pedido != user){
-            if(!state.pedidos.allPedidos.includes(pedido)){
-              addPedido(pedidoJSON.key, pedidoJSON.nombre, 
-                        pedidoJSON.rut, pedidoJSON.edad, 
-                        pedidoJSON.telefono, pedidoJSON.productos, 
-                        pedidoJSON.date, pedidoJSON.selectedEntrega)
-            }
-          }
-      }
-    }catch(e){
-    }
-    
-  }
+
 
   //funcion iniciada al hacer sync en la flatList...
   const syncFlatList = async () => {

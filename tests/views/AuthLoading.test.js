@@ -1,7 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-
-import AuthLoading from '../views/AuthLoading';
+import AuthLoading from '../../src/views/AuthLoading';
 
 describe('<AuthLoading />', () => {
   it('has 1 child', () => {

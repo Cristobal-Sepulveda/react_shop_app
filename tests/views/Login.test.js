@@ -1,7 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-
-import Login from '../views/Login';
+import Login from '../../src/views/Login';
 
 describe('<Login />', () => {
   it('has 1 child', () => {

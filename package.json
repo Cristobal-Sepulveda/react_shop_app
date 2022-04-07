@@ -15,7 +15,12 @@
     "transformIgnorePatterns": [
       "node_modules/(?!(react-native|@react-native|expo-checkbox|@react-native-community/datetimepicker)/)"
     ],
-    "setupFiles":["./src/tests/jestSetup/jestSetupFile.js"]
+    "setupFiles":["./tests/jestSetup/jestSetupFile.js"],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{js,jsx}",
+      "!**/node_modules/**"
+    ]
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.15.0",
