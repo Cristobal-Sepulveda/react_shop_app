@@ -69,13 +69,21 @@ const Home = ({addPedido}) =>{
   }
 
   useEffect(()=>{
+    console.log("USE EFFECT: inicio de sesion")
+    console.log(data)
     loadingData()
     setIsRefreshing(false)
   },[])
 
   useEffect(()=>{
-    if(pedidosList.length && !data.includes(pedidosList[(pedidosList.length-1)])){
-      setData(prevData =>[...prevData, pedidosList[(pedidosList.length-1)]])
+    if(pedidosList.length&& !data.includes(pedidosList[(pedidosList.length-1)])){
+      if(data.length === 0 && pedidosList.length>0 && !data.includes(pedidosList[(pedidosList.length-1)])){
+        for(let i = 0; i<pedidosList.length;i++){
+          setData(prevData =>[...prevData, pedidosList[i]])      
+        }
+      }else{
+        setData(prevData =>[...prevData, pedidosList[(pedidosList.length-1)]])    
+      }
     }
   },[pedidosList])
   
