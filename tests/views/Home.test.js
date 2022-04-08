@@ -1,20 +1,30 @@
 import React from 'react';
-import {FlatList} from "react-native"
-import renderer from 'react-test-renderer';
 import Home from '../../src/views/Home';
-import store from '../../src/redux/store';
-import { Provider } from 'react-redux';
-import {loadingData } from '../../src/views/Home';
-
+import '@testing-library/jest-dom';
+import { shallow, mount, render} from 'enzyme';
+import setupTests from '../enzymeSetup/setupTests'
+import { Provider}  from 'react-redux';
+import store from "../../src/redux/store"
+import { connect, useSelector } from "react-redux"
 jest.useFakeTimers()
 
 describe('<Home />', () => {
-  test('Viendo si la flatList carga la data correctamente', () => {
-    const tree = renderer.create( <Provider store={store}>
-                                    <Home />
-                                  </Provider>, { context: {}}).toJSON(); 
-    return loadingData().then( data =>{
-      expect(store.getState().pedidos.allPedidos.length).toBe(0)
-    }) 
+  
+  let wrapper = render(<Provider store={store}>
+                          <Home />
+                        </Provider>)
+  beforeEach(() => {
+          wrapper = render(<Provider store={store}>
+                              <Home />
+                            </Provider>)
   });
+
+  // test('Testeando el snapshot', () => {
+  //    const tree = renderer.create( <Provider store={store}>
+  //                                    <Home />
+  //                                  </Provider>, { context: {}}).toJSON(); 
+  //   const wrapper = shallow(<Home/>)
+  test('Testeando el snapshot', () => {
+    expect(wrapper).toMatchSnapshot();
+  })
 });

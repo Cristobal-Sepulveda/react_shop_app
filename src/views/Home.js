@@ -4,58 +4,34 @@ import ModalPlanilla from "../modals/ModalPlanilla";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { obtenerTipoConexion } from "../utils/funciones";
 import { connect, useSelector } from "react-redux"
+import store from "../redux/store"
 
-export const loadingData= async () =>{
-  try{
-    const asyncStorageAllKeys = await AsyncStorage.getAllKeys()
-    const user = await AsyncStorage.getItem("user")
-    for(let i = 0; i < asyncStorageAllKeys.length; i++){
-        const pedido = await AsyncStorage.getItem(asyncStorageAllKeys[i])
-        const pedidoJSON = JSON.parse(pedido)
-        if(pedido != user){
-          if(!state.pedidos.allPedidos.includes(pedido)){
-            addPedido(pedidoJSON.key, pedidoJSON.nombre, 
-                      pedidoJSON.rut, pedidoJSON.edad, 
-                      pedidoJSON.telefono, pedidoJSON.productos, 
-                      pedidoJSON.date, pedidoJSON.selectedEntrega)
-          }
-        }
-    }
-    console.log(state.allPedidos)
-    return state.allPedidos
-  }catch(e){
-  }
-  
-}
 
-const Home = ({addPedido}) =>{
+const Home = ({}) =>{
   const[isRefreshing, setIsRefreshing] = useState(true)
   const[data, setData] = useState([])
+
 
   const pedidosList = useSelector(state => {
     const auxArray = []
     for (let i = 0; i< state.pedidos.allPedidos.length; i++){
         auxArray.push(JSON.stringify(state.pedidos.allPedidos[i]))
-        //auxArray.push(state.pedidos.allPedidos[i])
     }
+    console.log("useSelector: ", auxArray)
     return auxArray
   })
+
     
-  //metodo que consulta el asyncstorage y agrega a la lista aquellos pedidos
-  // que por abc motivo no se cargaron en el store
-
-
   //funcion iniciada al hacer sync en la flatList...
   const syncFlatList = async () => {
+    console.log("syncFlatList")
     setIsRefreshing(false)
     const userConexionType = await obtenerTipoConexion()
     if(userConexionType.tipoConexion == "wifi"){
-      loadingData()
       return Alert.alert("lista sincronizada")
     }
     if(userConexionType.tipoConexion == "cellular"){
       if(userConexionType.connectionDetails == "4g"){
-        loadingData()
         return Alert.alert("lista sincronizada")
       }else{
         return Alert.alert("Tu conexion de celular debe ser 4g para poder sincronizar el listado")
@@ -71,7 +47,6 @@ const Home = ({addPedido}) =>{
   }
 
   useEffect(()=>{
-    loadingData()
     setIsRefreshing(false)
   },[])
 
@@ -89,9 +64,12 @@ const Home = ({addPedido}) =>{
   },[pedidosList])
   
   
-
+  const print = () => {
+    console.log(data)
+  }
 
   return (<SafeAreaView style={styles.container}>
+            <Button title="loadingData" onPress={() => print()}/>
             <FlatList
               data={data}
               renderItem={renderItem}
@@ -134,8 +112,8 @@ const mapDispatchToProps = dispatch =>({
     }),
 })
 
-const connectComponent = connect(mapStateToProps, mapDispatchToProps)
 
+const connectComponent = connect(mapStateToProps, mapDispatchToProps)
 export default connectComponent(Home);
 
 

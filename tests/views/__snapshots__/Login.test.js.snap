@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Probamos el componente <Login /> debería mostrar <Login /> correctamente  1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "center",
+      "backgroundColor": "#dddddd",
+      "flex": 1,
+      "justifyContent": "center",
+    }
+  }
+>
+  <View>
+    <Text>
+      Bienvenido
+    </Text>
+    <TextInput
+      allowFontScaling={true}
+      onChangeText={[Function]}
+      placeholder="Ingrese Usuario"
+      rejectResponderTermination={true}
+      style={
+        Object {
+          "borderRadius": 10,
+          "borderWidth": 1,
+          "color": "#000",
+          "height": 40,
+          "marginTop": 16,
+          "padding": 8,
+          "width": 250,
+        }
+      }
+      underlineColorAndroid="transparent"
+      value=""
+    />
+    <TextInput
+      allowFontScaling={true}
+      onChangeText={[Function]}
+      placeholder="Ingrese Clave"
+      rejectResponderTermination={true}
+      secureTextEntry={true}
+      style={
+        Object {
+          "borderRadius": 10,
+          "borderWidth": 1,
+          "color": "#000",
+          "height": 40,
+          "marginTop": 16,
+          "padding": 8,
+          "width": 250,
+        }
+      }
+      underlineColorAndroid="transparent"
+      value=""
+    />
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
+          "marginTop": 16,
+        }
+      }
+    >
+      <Button
+        onPress={[Function]}
+        title="Iniciar sesión"
+      />
+      <Button
+        onPress={[Function]}
+        title="Limpiar Campos"
+      />
+    </View>
+  </View>
+</View>
+`;
